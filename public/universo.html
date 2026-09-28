@@ -14,13 +14,87 @@
     body {
       margin: 0;
       width: 100%;
-      height: 100%;
-      overflow: hidden;
+      min-height: 100%;
       background: var(--negro-jore);
       color: var(--blanco-jore);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .universo {
+      box-sizing: border-box;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      padding: 48px 7vw;
+    }
+
+    .indice {
+      position: relative;
+      width: min(34vw, 420px, 50vh);
+      width: min(34vw, 420px, 50dvh);
+      flex: none;
+    }
+
+    .indice-marco {
+      display: block;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+
+    .indice-contenido {
+      position: absolute;
+      inset: 48% 12% auto;
+      transform: translateY(-50%);
+      text-align: center;
+    }
+
+    .indice h1 {
+      margin: 0 0 clamp(40px, 6vh, 64px);
+      font-size: 18px;
+      font-weight: normal;
+      letter-spacing: 0.22em;
+    }
+
+    .indice ul {
+      display: grid;
+      gap: 28px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 15px;
+      line-height: 1.5;
+      letter-spacing: 0.30em;
+    }
+
+    @media (max-width: 760px), (max-height: 600px) {
+      .universo {
+        padding: 32px 24px;
+      }
+
+      .indice {
+        width: min(100%, 360px);
+      }
     }
   </style>
 </head>
 <body>
+  <main class="universo">
+    <section class="indice" aria-labelledby="indice-titulo">
+      <img class="indice-marco" src="./marco_lampara_WEB.png" alt="">
+      <div class="indice-contenido">
+        <h1 id="indice-titulo">JORECAMILO</h1>
+        <ul aria-label="Índice editorial">
+          <li>ÁLBUM</li>
+          <li>OBRA</li>
+          <li>EL CARACOL</li>
+        </ul>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
