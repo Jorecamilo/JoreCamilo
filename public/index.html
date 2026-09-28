@@ -11,6 +11,7 @@
       background: #000;
       color: #fff;
       font-family: Arial, sans-serif;
+      overflow: hidden;
     }
 
     .entrada {
@@ -23,8 +24,10 @@
     }
 
     .cojito {
-      font-size: 80px;
-      margin-bottom: 40px;
+      width: min(70vw, 960px);
+      height: auto;
+      display: block;
+      margin-bottom: 20px;
     }
 
     .entrar {
@@ -41,8 +44,15 @@
 
   <main class="entrada">
 
-    <!-- Aquí vivirá Cojito -->
-    <div class="cojito">𓃘</div>
+    <video
+      class="cojito"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto">
+      <source src="./cojito_web_60fps.webm" type="video/webm">
+    </video>
 
     <a class="entrar" href="#universo">
       ENTRAR
