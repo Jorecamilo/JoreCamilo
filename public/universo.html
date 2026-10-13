@@ -71,7 +71,7 @@
       letter-spacing: 0.30em;
     }
 
-    @media (max-width: 760px), (max-height: 600px) {
+    @media (max-width: 760px) {
       .universo {
         padding: 32px 24px;
       }
@@ -88,7 +88,7 @@
       width: 100%;
     }
     .piezas-rama { display: inline-block; max-width: 100%; text-align: left; }
-    #pieza-trigger {
+    #pieza-trigger, #oximoron-trigger {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -101,7 +101,7 @@
       letter-spacing: inherit;
       cursor: pointer;
     }
-    #pieza-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 5px; }
+    #pieza-trigger:focus-visible, #oximoron-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 5px; }
     .piezas-triangulo { width: 10px; flex: none; letter-spacing: 0; }
     .piezas-despliegue {
       display: grid;
@@ -136,7 +136,18 @@
     }
     .pieza-campo canvas { display: block; pointer-events: none; }
     .pieza-campo[data-ready="true"] { visibility: visible; }
-    @media (hover: none) { .pieza-campo { display: none; } }
+    @media (max-width: 760px) {
+      .universo { min-height: 0; display: block; padding: 24px 24px 0; }
+      .indice { width: min(100%, 320px); margin: 0 auto; }
+      .indice-contenido { top: 41%; }
+      #pieza-trigger, #oximoron-trigger { min-height: 44px; }
+      .indice .piezas-hijos { margin-top: 4px; }
+      .pieza-campo { position: relative; inset: auto; width: 100%; height: clamp(300px, 52svh, 480px); margin-top: 16px; }
+    }
+    @media (pointer: coarse) {
+      #pieza-trigger, #oximoron-trigger { min-height: 44px; }
+      .indice .piezas-hijos { margin-top: 4px; }
+    }
   </style>
   <script type="importmap">
     {"imports":{
@@ -149,7 +160,7 @@
 <body>
   <main class="universo">
     <section class="indice" aria-labelledby="indice-titulo">
-      <img class="indice-marco" src="./marco_lampara_WEB.png" alt="">
+      <img class="indice-marco" src="./marco_universo.svg" width="600" height="900" alt="">
       <div class="indice-contenido">
         <h1 id="indice-titulo">JORECAMILO</h1>
         <ul aria-label="Índice editorial">
@@ -161,7 +172,7 @@
               <button id="pieza-trigger" type="button" aria-expanded="false" aria-controls="piezas-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>PIEZAS</span></button>
               <div class="piezas-despliegue" id="piezas-listado" aria-hidden="true" inert>
                 <div class="piezas-despliegue-interior">
-                  <ul class="piezas-hijos"><li id="oximoron-trigger">OXÍMORON</li></ul>
+                  <ul class="piezas-hijos"><li><button id="oximoron-trigger" type="button" aria-pressed="false">OXÍMORON</button></li></ul>
                 </div>
               </div>
             </div>

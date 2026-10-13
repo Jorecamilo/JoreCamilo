@@ -30,6 +30,8 @@ const branch = document.querySelector('.piezas-rama');
 const children = document.getElementById('piezas-listado');
 const index = document.querySelector('.indice');
 const hoverDevice = matchMedia('(hover: hover)');
+const stackedLayout = matchMedia('(max-width: 760px)');
+let persistentSelection = false;
 const source = './PIEZAS/Cara%20arcilla%201%20Ailin.spz';
 const lifetime = new AbortController();
 const listen = (node, event, fn) => node.addEventListener(event, fn, { signal: lifetime.signal });
@@ -42,8 +44,9 @@ let frameId = 0, lastTime = 0, floatTime = 0, warmUntil = 0;
 let radius = 1, renderFrames = 0, lastDebug = 0;
 const smooth = value => value * value * (3 - 2 * value);
 
-// Opening the editorial branch never changes the sculpture's target state.
-listen(trigger, 'click', () => {
+// Desktop clicks only expand the branch. Touch and keyboard clicks also select the artwork.
+listen(trigger, 'click', event => {
+  const tap = persistentSelection || !hoverDevice.matches || event.detail === 0;
   const expanded = trigger.getAttribute('aria-expanded') !== 'true';
   trigger.setAttribute('aria-expanded', String(expanded));
   trigger.querySelector('.piezas-triangulo').textContent = expanded ? '▾' : '▸';
@@ -51,6 +54,7 @@ listen(trigger, 'click', () => {
   if (!expanded) selectOx(false);
   children.setAttribute('aria-hidden', String(!expanded));
   children.inert = !expanded;
+  if (tap) { persistentSelection = true; target(expanded); }
 });
 function sample(now) {
   if (!transition) return progress;
@@ -60,7 +64,7 @@ function sample(now) {
   return progress;
 }
 function target(show) {
-  if (show && oxActive) { oxActive = false; oxViewer?.setActive(false); }
+  if (show && oxActive) { oxActive = false; oxTrigger.setAttribute('aria-pressed', 'false'); oxViewer?.setActive(false); }
   const now = performance.now();
   const current = sample(now); // Never reset to an endpoint on interrupted hover.
   active = show;
@@ -71,21 +75,32 @@ function target(show) {
   if (debug) console.info('PIEZA_TARGET', JSON.stringify({ show, from: current, duration: transition?.duration ?? 0 }));
   wake();
 }
-listen(trigger, 'mouseenter', () => { if (hoverDevice.matches) target(true); });
-listen(trigger, 'mouseleave', () => target(false));
+for (const node of [trigger, oxTrigger]) {
+  listen(node, 'pointerdown', event => { persistentSelection = event.pointerType === 'touch' || !hoverDevice.matches; });
+}
+listen(trigger, 'pointerenter', event => {
+  if (event.pointerType === 'mouse' && hoverDevice.matches) { persistentSelection = false; target(true); }
+});
+listen(trigger, 'pointerleave', event => { if (event.pointerType === 'mouse' && !persistentSelection) target(false); });
 function selectOx(show) {
   oxActive = show;
+  oxTrigger.setAttribute('aria-pressed', String(show));
   if (show) {
     // Cancel only the outgoing splat tail when selecting another artwork.
     target(false); progress = 0; transition = null;
   }
   oxViewer?.setActive(show); wake();
 }
-listen(oxTrigger, 'mouseenter', () => { if (hoverDevice.matches) selectOx(true); });
-listen(oxTrigger, 'mouseleave', () => selectOx(false));
+listen(oxTrigger, 'pointerenter', event => {
+  if (event.pointerType === 'mouse' && hoverDevice.matches) { persistentSelection = false; selectOx(true); }
+});
+listen(oxTrigger, 'pointerleave', event => { if (event.pointerType === 'mouse' && !persistentSelection) selectOx(false); });
+listen(oxTrigger, 'click', event => {
+  if (persistentSelection || !hoverDevice.matches || event.detail === 0) { persistentSelection = true; selectOx(!oxActive); }
+});
 listen(window, 'blur', () => { target(false); selectOx(false); });
 function sizeField() {
-  field.style.left = `${Math.min(innerWidth, Math.max(0, index.getBoundingClientRect().right))}px`;
+  field.style.left = stackedLayout.matches ? '0px' : `${Math.min(innerWidth, Math.max(0, index.getBoundingClientRect().right))}px`;
   resizeRenderer();
 }
 listen(window, 'resize', sizeField);
@@ -132,7 +147,7 @@ function frame(now) {
   diagnostics(now, !frameId);
 }
 async function preparePiece() {
-  if (!hoverDevice.matches || disposed) return;
+  if (disposed) return;
   const started = performance.now();
   try {
     const [THREE, { SparkRenderer, SplatMesh, dyno }, response] = await Promise.all([
