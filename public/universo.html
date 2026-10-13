@@ -131,12 +131,11 @@
       height: 100dvh;
       overflow: hidden;
       background: #000000;
-      opacity: 0;
-      transition: opacity 600ms ease;
+      visibility: hidden;
       pointer-events: none;
     }
     .pieza-campo canvas { display: block; pointer-events: none; }
-    .pieza-campo[data-ready="true"].activa { opacity: 1; }
+    .pieza-campo[data-ready="true"] { visibility: visible; }
     @media (hover: none) { .pieza-campo { display: none; } }
   </style>
   <script type="importmap">
@@ -172,127 +171,6 @@
     </section>
   </main>
   <div class="pieza-campo" id="pieza-campo" aria-hidden="true"></div>
-  <script type="module">
-    // Spark 2.3.1 + Three.js 0.180.0, as in pieza-test.html. No 3D controls.
-    const field = document.getElementById('pieza-campo');
-    const trigger = document.getElementById('pieza-trigger');
-    const branch = document.querySelector('.piezas-rama');
-    const children = document.getElementById('piezas-listado');
-    // Expansion is independent of the existing hover-driven sculpture.
-    trigger.addEventListener('click', () => {
-      const expanded = trigger.getAttribute('aria-expanded') !== 'true';
-      trigger.setAttribute('aria-expanded', String(expanded));
-      trigger.querySelector('.piezas-triangulo').textContent = expanded ? '▾' : '▸';
-      branch.classList.toggle('abierta', expanded);
-      children.setAttribute('aria-hidden', String(!expanded));
-      children.inert = !expanded;
-    });
-    const index = document.querySelector('.indice');
-    const hoverDevice = matchMedia('(hover: hover)');
-    const source = './PIEZAS/Cara%20arcilla%201%20Ailin.spz';
-    let active = false;
-    let drawFor = () => {};
-    let resizeRenderer = () => {};
-    function sizeField() {
-      const left = Math.min(innerWidth, Math.max(0, index.getBoundingClientRect().right));
-      field.style.left = `${left}px`;
-      resizeRenderer();
-    }
-    trigger.addEventListener('mouseenter', () => {
-      if (!hoverDevice.matches) return;
-      active = true;
-      field.classList.add('activa');
-      drawFor(700);
-    });
-    trigger.addEventListener('mouseleave', () => {
-      active = false;
-      field.classList.remove('activa');
-      drawFor(700);
-    });
-    addEventListener('blur', () => {
-      active = false;
-      field.classList.remove('activa');
-    });
-    addEventListener('resize', sizeField);
-    new ResizeObserver(sizeField).observe(index);
-    sizeField();
-
-    async function preparePiece() {
-      if (!hoverDevice.matches) return;
-      const started = performance.now();
-      try {
-        // Fetch directly from this origin, bypassing an older cached scan.
-        // No conversion, upload, persistent copy, or change to the SPZ.
-        const [THREE, { SparkRenderer, SplatMesh }, response] = await Promise.all([
-          import('three'), import('@sparkjsdev/spark'), fetch(source, { cache: 'no-store' })
-        ]);
-        if (!response.ok) throw new Error(`SPZ HTTP ${response.status}`);
-        const bytes = await response.arrayBuffer();
-        const digest = await crypto.subtle.digest('SHA-256', bytes);
-        const sha256 = Array.from(new Uint8Array(digest), n => n.toString(16).padStart(2, '0')).join('');
-        const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
-        renderer.setClearColor(0x000000, 1);
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-        field.appendChild(renderer.domElement);
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x000000);
-        const camera = new THREE.PerspectiveCamera(42, 1, 0.001, 100);
-        scene.add(new SparkRenderer({ renderer }));
-        const piece = new SplatMesh({ fileBytes: bytes, fileName: 'Cara arcilla 1 Ailin.spz', lod: false });
-        await piece.initialized;
-        const box = piece.getBoundingBox(true);
-        const radius = box.getSize(new THREE.Vector3()).length() / 2;
-        if (box.isEmpty() || !Number.isFinite(radius) || radius <= 0) throw new Error('SPZ sin dimensiones válidas');
-        piece.position.copy(box.getCenter(new THREE.Vector3()).negate());
-        scene.add(piece);
-        let until = 0;
-        let running = false;
-        let warm = false;
-        // Render only short settling intervals: preload, hover transitions, resize.
-        // The static canvas retains the rendered sculpture without an idle GPU loop.
-        drawFor = (milliseconds) => {
-          until = performance.now() + milliseconds;
-          if (running || document.hidden) return;
-          running = true;
-          renderer.setAnimationLoop(() => {
-            renderer.render(scene, camera);
-            if (performance.now() >= until || document.hidden) {
-              renderer.setAnimationLoop(null);
-              running = false;
-              if (!warm) {
-                warm = true;
-                field.dataset.ready = 'true';
-                console.info('UNIVERSO_PIEZA_READY', JSON.stringify({ source, bytes: bytes.byteLength, sha256, splats: piece.numSplats, prepareMs: Math.round(performance.now() - started) }));
-              }
-            }
-          });
-        };
-        resizeRenderer = () => {
-          const width = Math.max(1, field.clientWidth);
-          const height = Math.max(1, field.clientHeight);
-          renderer.setSize(width, height);
-          camera.aspect = width / height;
-          const halfAngle = Math.min(THREE.MathUtils.degToRad(21), Math.atan(Math.tan(THREE.MathUtils.degToRad(21)) * camera.aspect));
-          camera.position.set(0.12, 0.04, 1).normalize().multiplyScalar(radius / Math.sin(halfAngle) * 1.25);
-          camera.near = radius / 100;
-          camera.far = radius * 100;
-          camera.lookAt(0, 0, 0);
-          camera.updateProjectionMatrix();
-          drawFor(600);
-        };
-        sizeField();
-        document.addEventListener('visibilitychange', () => { if (!document.hidden && active) drawFor(600); });
-      } catch (error) {
-        console.error('UNIVERSO_PIEZA_ERROR', error);
-      }
-    }
-    // Do not delay the editorial page; prepare invisibly after its initial load.
-    function schedulePreparation() {
-      if ('requestIdleCallback' in window) requestIdleCallback(preparePiece, { timeout: 1000 });
-      else setTimeout(preparePiece, 0);
-    }
-    if (document.readyState === 'complete') schedulePreparation();
-    else addEventListener('load', schedulePreparation, { once: true });
-  </script>
+  <script type="module" src="./universo-pieza.js"></script>
 </body>
 </html>
