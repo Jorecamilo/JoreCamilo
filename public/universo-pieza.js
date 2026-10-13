@@ -24,6 +24,8 @@ THE SOFTWARE.
 */
 const field = document.getElementById('pieza-campo');
 const trigger = document.getElementById('pieza-trigger');
+const cojito = document.getElementById('cojito-album');
+const albumTrigger = document.getElementById('pecado-trigger');
 const oxTrigger = document.getElementById('oximoron-trigger');
 let oxViewer, oxActive = false;
 const categoryTriggers = [...document.querySelectorAll('.categoria-trigger')];
@@ -43,6 +45,22 @@ let frameId = 0, lastTime = 0, floatTime = 0, warmUntil = 0;
 let radius = 1, renderFrames = 0, lastDebug = 0;
 const smooth = value => value * value * (3 - 2 * value);
 
+function showCojito(show) {
+  if (show) { selectOx(false); target(false); progress = 0; transition = null; }
+  field.dataset.cojito = String(show);
+  cojito.hidden = !show;
+  if (show) {
+    cojito.muted = true;
+    cojito.play().catch(error => { if (error.name !== 'AbortError') console.warn('COJITO_PLAY', error.message); });
+  } else cojito.pause();
+}
+listen(albumTrigger, 'pointerdown', event => { persistentSelection = event.pointerType === 'touch' || !hoverDevice.matches; });
+listen(albumTrigger, 'pointerenter', event => {
+  if (event.pointerType === 'mouse' && hoverDevice.matches) { persistentSelection = false; showCojito(true); }
+});
+listen(albumTrigger, 'pointerleave', event => {
+  if (event.pointerType === 'mouse' && !persistentSelection) showCojito(false);
+});
 // One open category, with all panels in normal document flow.
 function expandCategory(button, expanded) {
   button.setAttribute('aria-expanded', String(expanded));
@@ -51,6 +69,10 @@ function expandCategory(button, expanded) {
   const panel = document.getElementById(button.getAttribute('aria-controls'));
   panel.setAttribute('aria-hidden', String(!expanded));
   panel.inert = !expanded;
+  if (!expanded) {
+    if (button === albumTrigger) showCojito(false);
+    for (const child of panel.querySelectorAll('.album-trigger')) expandCategory(child, false);
+  }
 }
 for (const button of categoryTriggers) {
   listen(button, 'click', event => {
@@ -62,6 +84,15 @@ for (const button of categoryTriggers) {
     else if (tap) { persistentSelection = true; target(expanded); }
   });
 }
+for (const button of document.querySelectorAll('.album-trigger')) {
+  listen(button, 'click', event => {
+    const expanded = button.getAttribute('aria-expanded') !== 'true';
+    expandCategory(button, expanded);
+    if (persistentSelection || !hoverDevice.matches || event.detail === 0) {
+      persistentSelection = true; showCojito(expanded);
+    }
+  });
+}
 function sample(now) {
   if (!transition) return progress;
   const t = Math.min(1, Math.max(0, (now - transition.start) / transition.duration));
@@ -70,6 +101,7 @@ function sample(now) {
   return progress;
 }
 function target(show) {
+  if (show) showCojito(false);
   if (show && oxActive) { oxActive = false; oxTrigger.setAttribute('aria-pressed', 'false'); oxViewer?.setActive(false); }
   const now = performance.now();
   const current = sample(now); // Never reset to an endpoint on interrupted hover.
@@ -89,6 +121,7 @@ listen(trigger, 'pointerenter', event => {
 });
 listen(trigger, 'pointerleave', event => { if (event.pointerType === 'mouse' && !persistentSelection) target(false); });
 function selectOx(show) {
+  if (show) showCojito(false);
   oxActive = show;
   oxTrigger.setAttribute('aria-pressed', String(show));
   if (show) {
@@ -104,7 +137,7 @@ listen(oxTrigger, 'pointerleave', event => { if (event.pointerType === 'mouse' &
 listen(oxTrigger, 'click', event => {
   if (persistentSelection || !hoverDevice.matches || event.detail === 0) { persistentSelection = true; selectOx(!oxActive); }
 });
-listen(window, 'blur', () => { target(false); selectOx(false); });
+listen(window, 'blur', () => { showCojito(false); target(false); selectOx(false); });
 function sizeField() {
   field.style.left = stackedLayout.matches ? '0px' : `${Math.min(innerWidth, Math.max(0, index.getBoundingClientRect().right))}px`;
   resizeRenderer();
@@ -118,7 +151,7 @@ function diagnostics(now, force = false) {
   if (!debug || (!force && now - lastDebug < 100)) return;
   lastDebug = now;
   field.dataset.diagnostics = JSON.stringify({ progress, active, transitioning: !!transition,
-    renderFrames, canvases: field.childElementCount, geometries: renderer.info.memory.geometries,
+    renderFrames, canvases: field.querySelectorAll('canvas').length, geometries: renderer.info.memory.geometries,
     textures: renderer.info.memory.textures, programs: renderer.info.programs.length,
     floatingRotation: root.rotation.toArray().slice(0, 3), running: !!frameId, oximoron: oxViewer?.state, splatVisible: !oxActive && progress > 0 });
 }
@@ -239,6 +272,7 @@ async function preparePiece() {
 }
 function cleanup() {
   if (disposed) return;
+  cojito.pause();
   disposed = true; lifetime.abort(); observer.disconnect();
   cancelAnimationFrame(frameId); frameId = 0;
   oxViewer?.dispose();
@@ -246,7 +280,7 @@ function cleanup() {
   renderer?.domElement.remove();
 }
 listen(document, 'visibilitychange', () => {
-  if (document.hidden) { target(false); selectOx(false); cancelAnimationFrame(frameId); frameId = 0; lastTime = 0; }
+  if (document.hidden) { showCojito(false); target(false); selectOx(false); cancelAnimationFrame(frameId); frameId = 0; lastTime = 0; }
   else wake();
 });
 listen(window, 'pagehide', event => {
