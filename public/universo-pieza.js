@@ -26,8 +26,7 @@ const field = document.getElementById('pieza-campo');
 const trigger = document.getElementById('pieza-trigger');
 const oxTrigger = document.getElementById('oximoron-trigger');
 let oxViewer, oxActive = false;
-const branch = document.querySelector('.piezas-rama');
-const children = document.getElementById('piezas-listado');
+const categoryTriggers = [...document.querySelectorAll('.categoria-trigger')];
 const index = document.querySelector('.indice');
 const hoverDevice = matchMedia('(hover: hover)');
 const stackedLayout = matchMedia('(max-width: 760px)');
@@ -44,18 +43,25 @@ let frameId = 0, lastTime = 0, floatTime = 0, warmUntil = 0;
 let radius = 1, renderFrames = 0, lastDebug = 0;
 const smooth = value => value * value * (3 - 2 * value);
 
-// Desktop clicks only expand the branch. Touch and keyboard clicks also select the artwork.
-listen(trigger, 'click', event => {
-  const tap = persistentSelection || !hoverDevice.matches || event.detail === 0;
-  const expanded = trigger.getAttribute('aria-expanded') !== 'true';
-  trigger.setAttribute('aria-expanded', String(expanded));
-  trigger.querySelector('.piezas-triangulo').textContent = expanded ? '▾' : '▸';
-  branch.classList.toggle('abierta', expanded);
-  if (!expanded) selectOx(false);
-  children.setAttribute('aria-hidden', String(!expanded));
-  children.inert = !expanded;
-  if (tap) { persistentSelection = true; target(expanded); }
-});
+// One open category, with all panels in normal document flow.
+function expandCategory(button, expanded) {
+  button.setAttribute('aria-expanded', String(expanded));
+  button.querySelector('.piezas-triangulo').textContent = expanded ? '▾' : '▸';
+  button.closest('.piezas-rama').classList.toggle('abierta', expanded);
+  const panel = document.getElementById(button.getAttribute('aria-controls'));
+  panel.setAttribute('aria-hidden', String(!expanded));
+  panel.inert = !expanded;
+}
+for (const button of categoryTriggers) {
+  listen(button, 'click', event => {
+    const tap = persistentSelection || !hoverDevice.matches || event.detail === 0;
+    const expanded = button.getAttribute('aria-expanded') !== 'true';
+    for (const other of categoryTriggers) expandCategory(other, other === button && expanded);
+    if (button !== trigger || !expanded) selectOx(false);
+    if (button !== trigger) target(false);
+    else if (tap) { persistentSelection = true; target(expanded); }
+  });
+}
 function sample(now) {
   if (!transition) return progress;
   const t = Math.min(1, Math.max(0, (now - transition.start) / transition.duration));
@@ -75,7 +81,7 @@ function target(show) {
   if (debug) console.info('PIEZA_TARGET', JSON.stringify({ show, from: current, duration: transition?.duration ?? 0 }));
   wake();
 }
-for (const node of [trigger, oxTrigger]) {
+for (const node of [...categoryTriggers, oxTrigger]) {
   listen(node, 'pointerdown', event => { persistentSelection = event.pointerType === 'touch' || !hoverDevice.matches; });
 }
 listen(trigger, 'pointerenter', event => {

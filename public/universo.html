@@ -48,16 +48,28 @@
 
     .indice-contenido {
       position: absolute;
-      inset: 48% 12% auto;
-      transform: translateY(-50%);
+      inset: 26% 12% 12%;
+      box-sizing: border-box;
+      padding-top: 60px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--blanco-jore) transparent;
       text-align: center;
     }
 
     .indice h1 {
-      margin: 0 0 clamp(40px, 6vh, 64px);
+      position: absolute;
+      top: 20%;
+      left: 10%;
+      right: 10%;
+      margin: 0;
       font-size: 18px;
+      line-height: 1.2;
       font-weight: normal;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.28em;
+      text-align: center;
+      text-indent: 0.28em;
     }
 
     .indice ul {
@@ -80,15 +92,8 @@
         width: min(100%, 360px);
       }
     }
-    /* Experimental entry: keep the approved index's existing layout unchanged. */
-    .indice ul { position: relative; }
-    .indice .pieza-entrada {
-      position: absolute;
-      top: calc(100% + 28px);
-      width: 100%;
-    }
-    .piezas-rama { display: inline-block; max-width: 100%; text-align: left; }
-    #pieza-trigger, #oximoron-trigger {
+    .piezas-rama { display: block; width: max-content; max-width: 100%; margin-inline: auto; text-align: left; }
+    .categoria-trigger, #oximoron-trigger {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -101,7 +106,7 @@
       letter-spacing: inherit;
       cursor: pointer;
     }
-    #pieza-trigger:focus-visible, #oximoron-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 5px; }
+    .categoria-trigger:focus-visible, #oximoron-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 5px; }
     .piezas-triangulo { width: 10px; flex: none; letter-spacing: 0; }
     .piezas-despliegue {
       display: grid;
@@ -122,7 +127,7 @@
       padding: 0 0 0 18px;
       font-size: 13px;
       line-height: 1.5;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.08em;
     }
     .pieza-campo {
       position: fixed;
@@ -137,15 +142,18 @@
     .pieza-campo canvas { display: block; pointer-events: none; }
     .pieza-campo[data-ready="true"] { visibility: visible; }
     @media (max-width: 760px) {
-      .universo { min-height: 0; display: block; padding: 24px 24px 0; }
+      .universo { min-height: 0; display: block; padding: 16px 24px 0; }
       .indice { width: min(100%, 320px); margin: 0 auto; }
-      .indice-contenido { top: 41%; }
-      #pieza-trigger, #oximoron-trigger { min-height: 44px; }
+      .indice-contenido { inset: 22px 22px 18px; padding-top: 36.4px; }
+      .indice h1 { top: 18px; }
+      .indice > .indice-contenido > ul { gap: 2px; }
+      .indice-marco { aspect-ratio: 1; }
+      .categoria-trigger, #oximoron-trigger { min-height: 36px; }
       .indice .piezas-hijos { margin-top: 4px; }
-      .pieza-campo { position: relative; inset: auto; width: 100%; height: clamp(300px, 52svh, 480px); margin-top: 16px; }
+      .pieza-campo { position: relative; inset: auto; width: 100%; height: clamp(260px, 44svh, 380px); margin-top: 4px; }
     }
     @media (pointer: coarse) {
-      #pieza-trigger, #oximoron-trigger { min-height: 44px; }
+      .categoria-trigger, #oximoron-trigger { min-height: 36px; }
       .indice .piezas-hijos { margin-top: 4px; }
     }
   </style>
@@ -160,19 +168,37 @@
 <body>
   <main class="universo">
     <section class="indice" aria-labelledby="indice-titulo">
-      <img class="indice-marco" src="./marco_universo.svg" width="600" height="900" alt="">
+      <picture>
+        <source media="(max-width: 760px)" srcset="./marco_universo_movil.svg" width="600" height="600">
+        <img class="indice-marco" src="./marco_universo.svg" width="600" height="900" alt="">
+      </picture>
+      <h1 id="indice-titulo" data-section="autobiografia">JORECAMILO</h1>
       <div class="indice-contenido">
-        <h1 id="indice-titulo">JORECAMILO</h1>
         <ul aria-label="Índice editorial">
-          <li>ÁLBUM</li>
-          <li>OBRA</li>
-          <li>EL CARACOL</li>
-          <li class="pieza-entrada">
+          <li>
             <div class="piezas-rama">
-              <button id="pieza-trigger" type="button" aria-expanded="false" aria-controls="piezas-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>PIEZAS</span></button>
+              <button class="categoria-trigger" id="album-trigger" type="button" aria-expanded="false" aria-controls="album-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>ÁLBUM</span></button>
+              <div class="piezas-despliegue" id="album-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"></div></div>
+            </div>
+          </li>
+          <li>
+            <div class="piezas-rama">
+              <button class="categoria-trigger" id="obra-trigger" type="button" aria-expanded="false" aria-controls="obra-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>OBRA</span></button>
+              <div class="piezas-despliegue" id="obra-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"></div></div>
+            </div>
+          </li>
+          <li>
+            <div class="piezas-rama">
+              <button class="categoria-trigger" id="caracol-trigger" type="button" aria-expanded="false" aria-controls="caracol-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>EL CARACOL</span></button>
+              <div class="piezas-despliegue" id="caracol-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"></div></div>
+            </div>
+          </li>
+          <li>
+            <div class="piezas-rama">
+              <button class="categoria-trigger" id="pieza-trigger" type="button" aria-expanded="false" aria-controls="piezas-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>PIEZAS</span></button>
               <div class="piezas-despliegue" id="piezas-listado" aria-hidden="true" inert>
                 <div class="piezas-despliegue-interior">
-                  <ul class="piezas-hijos"><li><button id="oximoron-trigger" type="button" aria-pressed="false">OXÍMORON</button></li></ul>
+                  <ul class="piezas-hijos"><li><button id="oximoron-trigger" type="button" aria-pressed="false">Oxímoron</button></li></ul>
                 </div>
               </div>
             </div>
