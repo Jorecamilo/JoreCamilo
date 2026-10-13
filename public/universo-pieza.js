@@ -71,7 +71,7 @@ function expandCategory(button, expanded) {
   panel.inert = !expanded;
   if (!expanded) {
     if (button === albumTrigger) showCojito(false);
-    for (const child of panel.querySelectorAll('.album-trigger')) expandCategory(child, false);
+    for (const child of panel.querySelectorAll('.album-trigger, .territorio-sub-trigger')) expandCategory(child, false);
   }
 }
 for (const button of categoryTriggers) {
@@ -92,6 +92,9 @@ for (const button of document.querySelectorAll('.album-trigger')) {
       persistentSelection = true; showCojito(expanded);
     }
   });
+}
+for (const button of document.querySelectorAll('.territorio-sub-trigger')) {
+  listen(button, 'click', () => expandCategory(button, button.getAttribute('aria-expanded') !== 'true'));
 }
 function sample(now) {
   if (!transition) return progress;

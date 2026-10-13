@@ -97,7 +97,7 @@
     }
     .indice-contenido > ul { flex: none; width: max-content; max-width: 100%; margin: auto; text-align: left; }
     .piezas-rama { display: block; width: 100%; text-align: left; }
-    .categoria-trigger, .album-trigger, #oximoron-trigger {
+    .categoria-trigger, .album-trigger, .territorio-sub-trigger, #oximoron-trigger {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -111,7 +111,7 @@
       cursor: pointer;
     }
     .categoria-trigger { display: grid; grid-template-columns: 10px minmax(0, 1fr); column-gap: 8px; width: 100%; text-align: left; }
-    .album-trigger:focus-visible, .categoria-trigger:focus-visible, #oximoron-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 5px; }
+    .territorio-sub-trigger:focus-visible, .album-trigger:focus-visible, .categoria-trigger:focus-visible, #oximoron-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 5px; }
     .piezas-triangulo { width: 10px; flex: none; letter-spacing: 0; }
     .piezas-despliegue {
       display: grid;
@@ -134,8 +134,9 @@
       line-height: 1.5;
       letter-spacing: 0.08em;
     }
-    .album-trigger { display: grid; grid-template-columns: 10px minmax(0, 1fr); width: 100%; text-align: left; min-height: 32px; }
+    .album-trigger, .territorio-sub-trigger { display: grid; grid-template-columns: 10px minmax(0, 1fr); width: 100%; text-align: left; min-height: 32px; }
     .indice .canciones { margin: 4px 0 0; padding-left: 36px; font-size: 12px; line-height: 1.7; letter-spacing: 0.03em; list-style: decimal; }
+    .indice .territorio-entradas { display: block; margin: 4px 0 6px; padding-left: 30px; font-size: 12px; line-height: 1.7; letter-spacing: 0.03em; }
     .indice .canciones li { padding-left: 2px; }
     .pieza-campo {
       position: fixed;
@@ -227,7 +228,20 @@
           <li>
             <div class="piezas-rama">
               <button class="categoria-trigger" id="territorio-trigger" type="button" aria-expanded="false" aria-controls="territorio-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>TERRITORIO</span></button>
-              <div class="piezas-despliegue" id="territorio-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"><ul class="piezas-hijos"><li>El caracol</li></ul></div></div>
+              <div class="piezas-despliegue" id="territorio-listado" aria-hidden="true" inert>
+                <div class="piezas-despliegue-interior">
+                  <ul class="piezas-hijos">
+                    <li class="piezas-rama">
+                      <button class="territorio-sub-trigger" id="universo-virtual-trigger" type="button" aria-expanded="false" aria-controls="universo-virtual-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>Universo Virtual</span></button>
+                      <div class="piezas-despliegue" id="universo-virtual-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"><ul class="territorio-entradas"><li>OVR</li></ul></div></div>
+                    </li>
+                    <li class="piezas-rama">
+                      <button class="territorio-sub-trigger" id="minca-trigger" type="button" aria-expanded="false" aria-controls="minca-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>Minca</span></button>
+                      <div class="piezas-despliegue" id="minca-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"><ul class="territorio-entradas"><li>El Caracol</li><li>Tienda Física</li></ul></div></div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </li>
         </ul>
