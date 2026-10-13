@@ -1,3 +1,4 @@
+import { createOximoron } from './universo-oximoron.js';
 // Spark 2.3.1 / Three.js 0.180.0. No demo scene, GUI or camera controls.
 // Disintegrate shader adapted from the official Spark example:
 // https://github.com/sparkjsdev/spark/blob/main/examples/splat-shader-effects/index.html
@@ -23,6 +24,8 @@ THE SOFTWARE.
 */
 const field = document.getElementById('pieza-campo');
 const trigger = document.getElementById('pieza-trigger');
+const oxTrigger = document.getElementById('oximoron-trigger');
+let oxViewer, oxActive = false;
 const branch = document.querySelector('.piezas-rama');
 const children = document.getElementById('piezas-listado');
 const index = document.querySelector('.indice');
@@ -45,6 +48,7 @@ listen(trigger, 'click', () => {
   trigger.setAttribute('aria-expanded', String(expanded));
   trigger.querySelector('.piezas-triangulo').textContent = expanded ? '▾' : '▸';
   branch.classList.toggle('abierta', expanded);
+  if (!expanded) selectOx(false);
   children.setAttribute('aria-hidden', String(!expanded));
   children.inert = !expanded;
 });
@@ -56,6 +60,7 @@ function sample(now) {
   return progress;
 }
 function target(show) {
+  if (show && oxActive) { oxActive = false; oxViewer?.setActive(false); }
   const now = performance.now();
   const current = sample(now); // Never reset to an endpoint on interrupted hover.
   active = show;
@@ -68,7 +73,17 @@ function target(show) {
 }
 listen(trigger, 'mouseenter', () => { if (hoverDevice.matches) target(true); });
 listen(trigger, 'mouseleave', () => target(false));
-listen(window, 'blur', () => target(false));
+function selectOx(show) {
+  oxActive = show;
+  if (show) {
+    // Cancel only the outgoing splat tail when selecting another artwork.
+    target(false); progress = 0; transition = null;
+  }
+  oxViewer?.setActive(show); wake();
+}
+listen(oxTrigger, 'mouseenter', () => { if (hoverDevice.matches) selectOx(true); });
+listen(oxTrigger, 'mouseleave', () => selectOx(false));
+listen(window, 'blur', () => { target(false); selectOx(false); });
 function sizeField() {
   field.style.left = `${Math.min(innerWidth, Math.max(0, index.getBoundingClientRect().right))}px`;
   resizeRenderer();
@@ -84,11 +99,12 @@ function diagnostics(now, force = false) {
   field.dataset.diagnostics = JSON.stringify({ progress, active, transitioning: !!transition,
     renderFrames, canvases: field.childElementCount, geometries: renderer.info.memory.geometries,
     textures: renderer.info.memory.textures, programs: renderer.info.programs.length,
-    floatingRotation: root.rotation.toArray().slice(0, 3), running: !!frameId });
+    floatingRotation: root.rotation.toArray().slice(0, 3), running: !!frameId, oximoron: oxViewer?.state, splatVisible: !oxActive && progress > 0 });
 }
 function frame(now) {
   frameId = 0;
   if (disposed || document.hidden) { lastTime = 0; return; }
+  const rotationDt = lastTime ? (now - lastTime) / 1000 : 0;
   const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.05) : 0;
   lastTime = now;
   if (!ready && now >= warmUntil) {
@@ -108,9 +124,10 @@ function frame(now) {
   root.rotation.set(.025 * Math.sin(floatTime * .49) * weight,
     (.314159 + .174533 * Math.sin(floatTime * .37)) * weight,
     .018 * Math.sin(floatTime * .61) * weight);
-  renderer.render(scene, camera);
+  if (oxActive) oxViewer?.render(rotationDt);
+  else renderer.render(scene, camera);
   renderFrames++;
-  if (!ready || active || transition) wake();
+  if (!ready || active || transition || oxViewer?.animating) wake();
   else lastTime = 0;
   diagnostics(now, !frameId);
 }
@@ -179,13 +196,15 @@ async function preparePiece() {
     });
     piece.updateGenerator(); // Compile once; hover updates the uniform, not the graph.
     wake = () => { if (!disposed && !document.hidden && !frameId) frameId = requestAnimationFrame(frame); };
+    oxViewer = createOximoron(THREE, renderer, () => wake(), lifetime.signal);
+    if (oxActive) oxViewer.setActive(true);
     resizeRenderer = () => {
       const width = Math.max(1, field.clientWidth), height = Math.max(1, field.clientHeight);
       renderer.setSize(width, height); camera.aspect = width / height;
       const halfAngle = Math.min(THREE.MathUtils.degToRad(21), Math.atan(Math.tan(THREE.MathUtils.degToRad(21)) * camera.aspect));
       camera.position.set(.12, .04, 1).normalize().multiplyScalar(radius / Math.sin(halfAngle) * 1.25);
       camera.near = radius / 100; camera.far = radius * 100;
-      camera.lookAt(0, 0, 0); camera.updateProjectionMatrix(); wake();
+      camera.lookAt(0, 0, 0); camera.updateProjectionMatrix(); oxViewer?.resize(); wake();
     };
     warmUntil = performance.now() + 600;
     sizeField();
@@ -201,11 +220,12 @@ function cleanup() {
   if (disposed) return;
   disposed = true; lifetime.abort(); observer.disconnect();
   cancelAnimationFrame(frameId); frameId = 0;
+  oxViewer?.dispose();
   piece?.dispose(); spark?.dispose(); renderer?.dispose();
   renderer?.domElement.remove();
 }
 listen(document, 'visibilitychange', () => {
-  if (document.hidden) { target(false); cancelAnimationFrame(frameId); frameId = 0; lastTime = 0; }
+  if (document.hidden) { target(false); selectOx(false); cancelAnimationFrame(frameId); frameId = 0; lastTime = 0; }
   else wake();
 });
 listen(window, 'pagehide', event => {
