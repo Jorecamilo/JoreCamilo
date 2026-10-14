@@ -45,6 +45,9 @@ let frameId = 0, lastTime = 0, floatTime = 0, warmUntil = 0;
 let radius = 1, renderFrames = 0, lastDebug = 0;
 const smooth = value => value * value * (3 - 2 * value);
 
+function updatePhoto() {
+  field.dataset.foto = String(!active && !oxActive && field.dataset.cojito !== 'true' && progress === 0 && !transition);
+}
 function showCojito(show) {
   if (show) { selectOx(false); target(false); progress = 0; transition = null; }
   field.dataset.cojito = String(show);
@@ -53,6 +56,7 @@ function showCojito(show) {
     cojito.muted = true;
     cojito.play().catch(error => { if (error.name !== 'AbortError') console.warn('COJITO_PLAY', error.message); });
   } else cojito.pause();
+  updatePhoto();
 }
 listen(albumTrigger, 'pointerdown', event => { persistentSelection = event.pointerType === 'touch' || !hoverDevice.matches; });
 listen(albumTrigger, 'pointerenter', event => {
@@ -113,6 +117,7 @@ function target(show) {
   if (ready && current !== goal) {
     transition = { from: current, to: goal, start: now, duration: (show ? 500 : 400) * Math.abs(goal - current) };
   }
+  updatePhoto();
   if (debug) console.info('PIEZA_TARGET', JSON.stringify({ show, from: current, duration: transition?.duration ?? 0 }));
   wake();
 }
@@ -131,7 +136,7 @@ function selectOx(show) {
     // Cancel only the outgoing splat tail when selecting another artwork.
     target(false); progress = 0; transition = null;
   }
-  oxViewer?.setActive(show); wake();
+  oxViewer?.setActive(show); updatePhoto(); wake();
 }
 listen(oxTrigger, 'pointerenter', event => {
   if (event.pointerType === 'mouse' && hoverDevice.matches) { persistentSelection = false; selectOx(true); }
@@ -170,6 +175,7 @@ function frame(now) {
     if (active) target(true);
   }
   sample(now);
+  updatePhoto();
   if (progressUniform.value !== progress) { progressUniform.value = progress; piece.updateVersion(); }
   // Bounded Object3D motion only: never rotate the canvas or run disintegration
   // periodically. At progress=1 the original shader restores every splat exactly.

@@ -148,6 +148,10 @@
       visibility: hidden;
       pointer-events: none;
     }
+    .foto-inicial { position: absolute; inset: 0; margin: auto; width: auto; height: auto; max-width: min(72%, 380px); max-height: 68%; object-fit: contain; transform: scale(0.75);}
+    .pieza-campo[data-foto="true"] { visibility: visible; }
+    .pieza-campo[data-foto="true"] canvas { visibility: hidden; }
+    .pieza-campo:not([data-foto="true"]) .foto-inicial { visibility: hidden; }
     .pieza-campo canvas { display: block; pointer-events: none; }
     .cojito-album { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
     .pieza-campo[data-cojito="true"] { visibility: visible; }
@@ -248,7 +252,7 @@
       </div>
     </section>
   </main>
-  <div class="pieza-campo" id="pieza-campo" aria-hidden="true"><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
+  <div class="pieza-campo" id="pieza-campo" data-foto="true" aria-hidden="true"><img class="foto-inicial" src="./imagenes/maicena.webp" width="1057" height="1600" alt=""><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
   <script type="module" src="./universo-pieza.js"></script>
 </body>
 </html>
