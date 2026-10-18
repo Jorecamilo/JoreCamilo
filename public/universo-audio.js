@@ -1,16 +1,16 @@
 export function createAudioTest(field) {
   const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
-  if (!local) return { show() {}, hide() {}, dispose() {}, get isOpen() { return false; } };
+  const emptyMessage = local ? 'Audio de prueba no cargado' : 'Audio próximamente';
   const panel = document.createElement('section');
-  panel.className = 'audio-prueba'; panel.hidden = true; panel.setAttribute('aria-label', 'Prueba local de Madravilla');
-  panel.innerHTML = `<p class="audio-titulo">MADRAVILLA — JoreCamilo</p>
-    <p class="audio-estado" role="status">Audio de prueba no cargado</p>
+  panel.className = 'audio-prueba'; panel.hidden = true; panel.setAttribute('aria-label', 'Reproductor de Madravilla');
+  panel.innerHTML = `<p class="audio-titulo">Madravilla — JoreCamilo</p>
+    <p class="audio-estado" role="status">${emptyMessage}</p>
     <div class="audio-controles"><button type="button" class="audio-play" disabled aria-label="Reproducir">PLAY</button>
     <input class="audio-progreso" type="range" min="0" max="100" value="0" step="0.1" disabled aria-label="Posición del audio">
     <span class="audio-tiempo">0:00 / 0:00</span></div>
-    <button type="button" class="audio-cargar">CARGAR AUDIO DE PRUEBA</button>
-    <input class="audio-archivo" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" hidden>
-    <ul class="audio-plataformas"><li>TIDAL — Próximamente</li><li>Spotify — Próximamente</li><li>YouTube — Próximamente</li><li>COMPRAR (Bandcamp) — Próximamente</li></ul>`;
+    ${local ? `<button type="button" class="audio-cargar">CARGAR AUDIO DE PRUEBA</button>
+    <input class="audio-archivo" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" hidden>` : ''}
+    <ul class="audio-plataformas"><li>TIDAL — Próximamente</li><li>Spotify — Próximamente</li><li>YouTube — Próximamente</li><li>Bandcamp — Próximamente</li></ul>`;
   field.appendChild(panel);
   const audio = document.createElement('audio'); audio.preload = 'metadata'; panel.appendChild(audio);
   const file = panel.querySelector('.audio-archivo'), play = panel.querySelector('.audio-play');
@@ -28,11 +28,11 @@ export function createAudioTest(field) {
   }
   function clear() {
     generation++; audio.pause(); audio.removeAttribute('src'); audio.load();
-    if (url) URL.revokeObjectURL(url); url = null; file.value = '';
-    status.textContent = 'Audio de prueba no cargado'; update();
+    if (url) URL.revokeObjectURL(url); url = null; if (file) file.value = '';
+    status.textContent = emptyMessage; update();
   }
-  panel.querySelector('.audio-cargar').addEventListener('click', () => file.click());
-  file.addEventListener('change', () => {
+  panel.querySelector('.audio-cargar')?.addEventListener('click', () => file.click());
+  file?.addEventListener('change', () => {
     const selected = file.files[0]; if (!selected) return;
     clear();
     if (!/\.(mp3|wav)$/i.test(selected.name)) { status.textContent = 'Selecciona un archivo MP3 o WAV'; return; }
