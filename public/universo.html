@@ -20,7 +20,9 @@
     :root.tema-blanco { --negro-jore: #ffffff; --blanco-jore: #000000; }
     html, body, .pieza-campo { transition: background-color .8s ease, color .8s ease; }
     .indice-marco, .cojito-album { filter: brightness(1); transition: filter .8s ease; }
-    .tema-blanco .indice-marco, .tema-blanco .cojito-album { filter: brightness(0); }
+    .tema-blanco .indice-marco { filter: brightness(0); }
+    .cojito-album { filter: invert(0); }
+    .tema-blanco .cojito-album { filter: invert(1); }
     .cancion-trigger { border: 0; padding: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
     .cancion-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 3px; }
     html,
