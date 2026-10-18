@@ -1,3 +1,4 @@
+import { createAudioTest } from './universo-audio.js';
 import { createEyeRain } from './universo-ojos.js';
 import { createOximoron } from './universo-oximoron.js';
 // Spark 2.3.1 / Three.js 0.180.0. No demo scene, GUI or camera controls.
@@ -24,6 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 const field = document.getElementById('pieza-campo');
+const audioTest = createAudioTest(field);
 const eyeRain = createEyeRain(field);
 let albumVisual = false;
 const trigger = document.getElementById('pieza-trigger');
@@ -52,6 +54,7 @@ function updatePhoto() {
   field.dataset.foto = String(!active && !oxActive && !albumVisual && progress === 0 && !transition);
 }
 function showAlbum(show, restart = false) {
+  audioTest.hide();
   albumVisual = show;
   if (show) { selectOx(false); target(false); progress = 0; transition = null; }
   document.documentElement.classList.toggle('tema-blanco', show);
@@ -102,6 +105,12 @@ for (const button of document.querySelectorAll('.cancion-trigger')) {
     document.documentElement.classList.toggle('tema-blanco', white);
     field.dataset.ojos = String(white);
     if (!white) eyeRain.hide();
+    if (button.dataset.cancion === 'madravilla') {
+      eyeRain.hide(); field.dataset.ojos = 'false';
+      cojito.hidden = false; cojito.muted = true;
+      cojito.play().catch(error => { if (error.name !== 'AbortError') console.warn('COJITO_PLAY', error.message); });
+      audioTest.show();
+    }
   });
 }
 for (const button of document.querySelectorAll('.territorio-sub-trigger')) {
@@ -152,7 +161,7 @@ listen(oxTrigger, 'pointerleave', event => { if (event.pointerType === 'mouse' &
 listen(oxTrigger, 'click', event => {
   if (persistentSelection || !hoverDevice.matches || event.detail === 0) { persistentSelection = true; selectOx(!oxActive); }
 });
-listen(window, 'blur', () => { showAlbum(false); target(false); selectOx(false); });
+listen(window, 'blur', () => { if (audioTest.isOpen) return; showAlbum(false); target(false); selectOx(false); });
 function sizeField() {
   field.style.left = stackedLayout.matches ? '0px' : `${Math.min(innerWidth, Math.max(0, index.getBoundingClientRect().right))}px`;
   resizeRenderer();
@@ -288,6 +297,7 @@ async function preparePiece() {
 }
 function cleanup() {
   if (disposed) return;
+  audioTest.dispose();
   eyeRain.dispose();
   cojito.pause();
   disposed = true; lifetime.abort(); observer.disconnect();
@@ -297,7 +307,7 @@ function cleanup() {
   renderer?.domElement.remove();
 }
 listen(document, 'visibilitychange', () => {
-  if (document.hidden) { showAlbum(false); target(false); selectOx(false); cancelAnimationFrame(frameId); frameId = 0; lastTime = 0; }
+  if (document.hidden) { if (audioTest.isOpen) return; showAlbum(false); target(false); selectOx(false); cancelAnimationFrame(frameId); frameId = 0; lastTime = 0; }
   else wake();
 });
 listen(window, 'pagehide', event => {
