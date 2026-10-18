@@ -17,6 +17,12 @@
       --negro-jore: #000000;
     }
 
+    :root.tema-blanco { --negro-jore: #ffffff; --blanco-jore: #000000; }
+    html, body, .pieza-campo { transition: background-color .8s ease, color .8s ease; }
+    .indice-marco, .cojito-album { filter: brightness(1); transition: filter .8s ease; }
+    .tema-blanco .indice-marco, .tema-blanco .cojito-album { filter: brightness(0); }
+    .cancion-trigger { border: 0; padding: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
+    .cancion-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 3px; }
     html,
     body {
       margin: 0;
@@ -151,7 +157,7 @@
       right: 0;
       height: 100dvh;
       overflow: hidden;
-      background: #000000;
+      background: var(--negro-jore);
       visibility: hidden;
       pointer-events: none;
     }
@@ -209,8 +215,8 @@
                     <div class="piezas-despliegue" id="pecado-canciones" aria-hidden="true" inert>
                       <div class="piezas-despliegue-interior">
                         <ol class="canciones">
-                          <li>Madravilla</li>
-                          <li>El Monte, La Flor</li>
+                          <li><button class="cancion-trigger" type="button" data-cancion="madravilla" data-tema="blanco">Madravilla</button></li>
+                          <li><button class="cancion-trigger" type="button" data-cancion="el-monte-la-flor" data-tema="negro">El Monte, La Flor</button></li>
                           <li>Chupa Flor</li>
                         </ol>
                       </div>

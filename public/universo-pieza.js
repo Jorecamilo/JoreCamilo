@@ -50,6 +50,8 @@ function updatePhoto() {
 }
 function showCojito(show) {
   if (show) { selectOx(false); target(false); progress = 0; transition = null; }
+  document.documentElement.classList.toggle('tema-blanco', show);
+  delete field.dataset.cancion;
   field.dataset.cojito = String(show);
   cojito.hidden = !show;
   if (show) {
@@ -92,9 +94,15 @@ for (const button of document.querySelectorAll('.album-trigger')) {
   listen(button, 'click', event => {
     const expanded = button.getAttribute('aria-expanded') !== 'true';
     expandCategory(button, expanded);
-    if (persistentSelection || !hoverDevice.matches || event.detail === 0) {
-      persistentSelection = true; showCojito(expanded);
-    }
+    persistentSelection = true; showCojito(expanded);
+  });
+}
+for (const button of document.querySelectorAll('.cancion-trigger')) {
+  listen(button, 'click', () => {
+    persistentSelection = true;
+    showCojito(true);
+    field.dataset.cancion = button.dataset.cancion;
+    document.documentElement.classList.toggle('tema-blanco', button.dataset.tema === 'blanco');
   });
 }
 for (const button of document.querySelectorAll('.territorio-sub-trigger')) {
