@@ -112,6 +112,8 @@
     }
     .indice-contenido > ul { flex: none; width: max-content; max-width: 100%; margin: auto; text-align: left; }
     .piezas-rama { display: block; width: 100%; text-align: left; }
+    .album-link { color: inherit; text-decoration: none; display: inline-block; padding: 6px 0; }
+    .album-link:focus-visible { outline: 1px dotted currentColor; outline-offset: 3px; }
     .categoria-trigger, .album-trigger, .territorio-sub-trigger, #oximoron-trigger {
       display: inline-flex;
       align-items: center;
@@ -231,18 +233,7 @@
               <button class="categoria-trigger" id="album-trigger" type="button" aria-expanded="false" aria-controls="album-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>ÁLBUMES</span></button>
               <div class="piezas-despliegue" id="album-listado" aria-hidden="true" inert>
                 <div class="piezas-despliegue-interior">
-                  <ul class="piezas-hijos"><li class="piezas-rama">
-                    <button class="album-trigger" id="pecado-trigger" type="button" aria-expanded="false" aria-controls="pecado-canciones"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>El pecado original (2026)</span></button>
-                    <div class="piezas-despliegue" id="pecado-canciones" aria-hidden="true" inert>
-                      <div class="piezas-despliegue-interior">
-                        <ol class="canciones">
-                          <li><button class="cancion-trigger" type="button" data-cancion="madravilla" data-tema="blanco">Madravilla</button></li>
-                          <li><button class="cancion-trigger" type="button" data-cancion="el-monte-la-flor" data-tema="negro">El Monte, La Flor</button></li>
-                          <li>Chupa Flor</li>
-                        </ol>
-                      </div>
-                    </div>
-                  </li></ul>
+                  <ul class="piezas-hijos"><li><a class="album-link" id="pecado-trigger" href="./pecado-original.html">El pecado original (2026)</a></li></ul>
                 </div>
               </div>
             </div>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El pecado original (2026) | JoreCamilo</title>
+  <link rel="icon" href="/favicon.ico?v=oximoron-1" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=oximoron-1">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=oximoron-1">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=oximoron-1">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png?v=oximoron-1">
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png?v=oximoron-1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=oximoron-1">
+  <style>
+    :root {
+      --blanco-jore: #e0d7c1;
+      --negro-jore: #000000;
+    }
+
+    :root.tema-blanco { --negro-jore: #ffffff; --blanco-jore: #000000; }
+    html, body, .pieza-campo { transition: background-color .8s ease, color .8s ease; }
+    .indice-marco, .cojito-album { filter: brightness(1); transition: filter .8s ease; }
+    .tema-blanco .indice-marco { filter: brightness(0); }
+    .cojito-album { filter: invert(0); }
+    .tema-blanco .cojito-album { filter: invert(1); }
+    .cancion-trigger { border: 0; padding: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
+    .cancion-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 3px; }
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      background: var(--negro-jore);
+      color: var(--blanco-jore);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .universo {
+      box-sizing: border-box;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      padding: 48px 7vw;
+    }
+
+    .indice {
+      --titulo-top: 20%;
+      --titulo-alto: 21.6px;
+      position: relative;
+      width: min(34vw, 420px, 50vh);
+      width: min(34vw, 420px, 50dvh);
+      flex: none;
+    }
+
+    .indice-marco {
+      display: block;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+
+    .indice-contenido {
+      position: absolute;
+      inset: calc(var(--titulo-top) + var(--titulo-alto)) 12% 12%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--blanco-jore) transparent;
+      text-align: center;
+    }
+
+    .indice h1 {
+      position: absolute;
+      top: var(--titulo-top);
+      left: 10%;
+      right: 10%;
+      margin: 0;
+      font-size: 18px;
+      line-height: var(--titulo-alto);
+      font-weight: normal;
+      letter-spacing: 0.28em;
+      text-align: center;
+      text-indent: 0.28em;
+    }
+
+    .indice ul {
+      display: grid;
+      gap: 22px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 15px;
+      line-height: 1.5;
+      letter-spacing: 0.30em;
+    }
+
+    @media (max-width: 760px) {
+      .universo {
+        padding: 32px 24px;
+      }
+
+      .indice {
+        width: min(100%, 360px);
+      }
+    }
+    .indice-contenido > ul { flex: none; width: max-content; max-width: 100%; margin: auto; text-align: left; }
+    .piezas-rama { display: block; width: 100%; text-align: left; }
+    .categoria-trigger, .album-trigger, .territorio-sub-trigger, #oximoron-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      letter-spacing: inherit;
+      cursor: pointer;
+    }
+    .categoria-trigger { display: grid; grid-template-columns: 10px minmax(0, 1fr); column-gap: 8px; width: 100%; text-align: left; }
+    .territorio-sub-trigger:focus-visible, .album-trigger:focus-visible, .categoria-trigger:focus-visible, #oximoron-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 5px; }
+    .piezas-triangulo { width: 10px; flex: none; letter-spacing: 0; }
+    .piezas-despliegue {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      visibility: hidden;
+      transition: grid-template-rows 250ms ease, opacity 250ms ease, visibility 250ms;
+    }
+    .piezas-rama.abierta > .piezas-despliegue {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      visibility: visible;
+    }
+    .piezas-despliegue-interior { min-height: 0; overflow: hidden; }
+    .indice .piezas-hijos {
+      display: block;
+      margin: 6px 0 0;
+      padding: 0 0 0 30px;
+      font-size: 13px;
+      line-height: 1.5;
+      letter-spacing: 0.08em;
+    }
+    .album-trigger, .territorio-sub-trigger { display: grid; grid-template-columns: 10px minmax(0, 1fr); width: 100%; text-align: left; min-height: 32px; }
+    .indice .canciones { margin: 4px 0 0; padding-left: 36px; font-size: 12px; line-height: 1.7; letter-spacing: 0.03em; list-style: decimal; }
+    .indice .territorio-entradas { display: block; margin: 4px 0 6px; padding-left: 30px; font-size: 12px; line-height: 1.7; letter-spacing: 0.03em; }
+    .indice .canciones li { padding-left: 2px; }
+    .pieza-campo {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--negro-jore);
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .foto-inicial { position: absolute; inset: 0; margin: auto; width: auto; height: auto; max-width: min(72%, 380px); max-height: 68%; object-fit: contain; transform: scale(0.75);}
+    .pieza-campo[data-foto="true"] { visibility: visible; }
+    .pieza-campo[data-foto="true"] canvas { visibility: hidden; }
+    .pieza-campo:not([data-foto="true"]) .foto-inicial { visibility: hidden; }
+    .pieza-campo canvas { display: block; pointer-events: none; }
+    .pieza-campo[data-audio-test="true"] .cojito-album { height: calc(100% - 210px); }
+    .audio-prueba { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); width: min(380px, calc(100% - 40px)); color: #000; pointer-events: auto; font-size: 11px; letter-spacing: .04em; }
+    .audio-prueba[hidden] { display: none; }
+    .audio-titulo { font-size: 13px; margin: 0 0 8px; }
+    .audio-estado { overflow-wrap: anywhere; margin: 0 0 10px; }
+    .audio-controles { display: flex; align-items: center; gap: 10px; }
+    .audio-prueba button { font: inherit; color: inherit; background: transparent; border: 1px solid #000; padding: 6px 8px; cursor: pointer; }
+    .audio-prueba button:disabled { opacity: .4; cursor: default; }
+    .audio-progreso { accent-color: #000; min-width: 0; flex: 1; }
+    .audio-tiempo { white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .audio-cargar { margin-top: 12px; }
+    .audio-plataformas { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 10px; }
+    @media (max-width: 760px) { .pieza-campo[data-audio-test="true"] { height: 500px; } }
+    .lluvia-ojos { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    .lluvia-ojos[hidden] { display: none; }
+    .tema-blanco .indice { z-index: 2; background: #fff; }
+    .pieza-campo[data-album="true"] { visibility: visible; }
+    .pieza-campo[data-album="true"] canvas:not(.lluvia-ojos) { visibility: hidden; }
+    .pieza-campo canvas.lluvia-ojos[hidden] { display: none; }
+    .cojito-album { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    .pieza-campo[data-cojito="true"] { visibility: visible; }
+    .pieza-campo[data-cojito="true"] canvas { visibility: hidden; }
+    .pieza-campo[data-ready="true"] { visibility: visible; }
+    @media (max-width: 760px) {
+      .universo { min-height: 0; display: block; padding: 16px 24px 0; }
+      .indice { --titulo-top: 22px; width: min(100%, 320px); margin: 0 auto; }
+      .indice-contenido { inset: calc(var(--titulo-top) + var(--titulo-alto)) 22px 18px; }
+      .indice > .indice-contenido > ul { gap: 0; }
+      .indice-marco { aspect-ratio: 1; }
+      .categoria-trigger { min-height: 36px; }
+      #oximoron-trigger { min-height: 32px; }
+      .indice .piezas-hijos { margin-top: 0; }
+      .pieza-campo { position: relative; inset: auto; width: 100%; height: clamp(260px, 44svh, 380px); margin-top: 4px; }
+    }
+    @media (pointer: coarse) {
+      .categoria-trigger { min-height: 36px; }
+      #oximoron-trigger { min-height: 32px; }
+      .indice .piezas-hijos { margin-top: 0; }
+    }
+      .album-nombre { margin: 0 0 22px; font-size: 13px; font-weight: normal; letter-spacing: .08em; }
+    .album-canciones { margin: 0; padding-left: 22px; font-size: 13px; line-height: 2.2; letter-spacing: .04em; }
+    .album-indice { margin: auto; text-align: left; }
+    .album-volver { display: inline-block; margin-top: 24px; color: inherit; font-size: 11px; letter-spacing: .06em; }
+  </style>
+
+</head>
+<body>
+  <main class="universo">
+    <section class="indice" aria-labelledby="indice-titulo">
+      <picture><source media="(max-width: 760px)" srcset="./marco_universo_movil.svg" width="600" height="600"><img class="indice-marco" src="./marco_universo.svg" width="600" height="900" alt=""></picture>
+      <h1 id="indice-titulo">JORECAMILO</h1>
+      <div class="indice-contenido"><div class="album-indice">
+        <h2 class="album-nombre">El pecado original (2026)</h2>
+        <ol class="album-canciones">
+          <li><button type="button" class="cancion-trigger" data-cancion="madravilla">Madravilla</button></li>
+          <li><button type="button" class="cancion-trigger" data-cancion="el-monte-la-flor">El Monte, La Flor</button></li>
+          <li><button type="button" class="cancion-trigger" data-cancion="chupa-flor">Chupa Flor</button></li>
+        </ol>
+        <a class="album-volver" href="./universo.html">Volver al universo</a>
+      </div></div>
+    </section>
+  </main>
+  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
+  <script type="module" src="./pecado-original.js"></script>
+</body>
+</html>
