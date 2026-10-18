@@ -1,3 +1,4 @@
+import { createEyeRain } from './universo-ojos.js';
 import { createOximoron } from './universo-oximoron.js';
 // Spark 2.3.1 / Three.js 0.180.0. No demo scene, GUI or camera controls.
 // Disintegrate shader adapted from the official Spark example:
@@ -23,6 +24,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 const field = document.getElementById('pieza-campo');
+const eyeRain = createEyeRain(field);
+let albumVisual = false;
 const trigger = document.getElementById('pieza-trigger');
 const cojito = document.getElementById('cojito-album');
 const albumTrigger = document.getElementById('pecado-trigger');
@@ -46,27 +49,20 @@ let radius = 1, renderFrames = 0, lastDebug = 0;
 const smooth = value => value * value * (3 - 2 * value);
 
 function updatePhoto() {
-  field.dataset.foto = String(!active && !oxActive && field.dataset.cojito !== 'true' && progress === 0 && !transition);
+  field.dataset.foto = String(!active && !oxActive && !albumVisual && progress === 0 && !transition);
 }
-function showCojito(show) {
+function showAlbum(show, restart = false) {
+  albumVisual = show;
   if (show) { selectOx(false); target(false); progress = 0; transition = null; }
   document.documentElement.classList.toggle('tema-blanco', show);
   delete field.dataset.cancion;
-  field.dataset.cojito = String(show);
-  cojito.hidden = !show;
-  if (show) {
-    cojito.muted = true;
-    cojito.play().catch(error => { if (error.name !== 'AbortError') console.warn('COJITO_PLAY', error.message); });
-  } else cojito.pause();
+  field.dataset.album = String(show);
+  field.dataset.ojos = String(show);
+  cojito.hidden = true; cojito.pause();
+  if (show) eyeRain.show(restart); else eyeRain.hide();
   updatePhoto();
 }
 listen(albumTrigger, 'pointerdown', event => { persistentSelection = event.pointerType === 'touch' || !hoverDevice.matches; });
-listen(albumTrigger, 'pointerenter', event => {
-  if (event.pointerType === 'mouse' && hoverDevice.matches) { persistentSelection = false; showCojito(true); }
-});
-listen(albumTrigger, 'pointerleave', event => {
-  if (event.pointerType === 'mouse' && !persistentSelection) showCojito(false);
-});
 // One open category, with all panels in normal document flow.
 function expandCategory(button, expanded) {
   button.setAttribute('aria-expanded', String(expanded));
@@ -76,7 +72,7 @@ function expandCategory(button, expanded) {
   panel.setAttribute('aria-hidden', String(!expanded));
   panel.inert = !expanded;
   if (!expanded) {
-    if (button === albumTrigger) showCojito(false);
+    if (button === albumTrigger) showAlbum(false);
     for (const child of panel.querySelectorAll('.album-trigger, .territorio-sub-trigger')) expandCategory(child, false);
   }
 }
@@ -94,15 +90,18 @@ for (const button of document.querySelectorAll('.album-trigger')) {
   listen(button, 'click', event => {
     const expanded = button.getAttribute('aria-expanded') !== 'true';
     expandCategory(button, expanded);
-    persistentSelection = true; showCojito(expanded);
+    persistentSelection = true; showAlbum(expanded, expanded);
   });
 }
 for (const button of document.querySelectorAll('.cancion-trigger')) {
   listen(button, 'click', () => {
     persistentSelection = true;
-    showCojito(true);
+    showAlbum(true);
     field.dataset.cancion = button.dataset.cancion;
-    document.documentElement.classList.toggle('tema-blanco', button.dataset.tema === 'blanco');
+    const white = button.dataset.tema === 'blanco';
+    document.documentElement.classList.toggle('tema-blanco', white);
+    field.dataset.ojos = String(white);
+    if (!white) eyeRain.hide();
   });
 }
 for (const button of document.querySelectorAll('.territorio-sub-trigger')) {
@@ -116,7 +115,7 @@ function sample(now) {
   return progress;
 }
 function target(show) {
-  if (show) showCojito(false);
+  if (show) showAlbum(false);
   if (show && oxActive) { oxActive = false; oxTrigger.setAttribute('aria-pressed', 'false'); oxViewer?.setActive(false); }
   const now = performance.now();
   const current = sample(now); // Never reset to an endpoint on interrupted hover.
@@ -137,7 +136,7 @@ listen(trigger, 'pointerenter', event => {
 });
 listen(trigger, 'pointerleave', event => { if (event.pointerType === 'mouse' && !persistentSelection) target(false); });
 function selectOx(show) {
-  if (show) showCojito(false);
+  if (show) showAlbum(false);
   oxActive = show;
   oxTrigger.setAttribute('aria-pressed', String(show));
   if (show) {
@@ -153,7 +152,7 @@ listen(oxTrigger, 'pointerleave', event => { if (event.pointerType === 'mouse' &
 listen(oxTrigger, 'click', event => {
   if (persistentSelection || !hoverDevice.matches || event.detail === 0) { persistentSelection = true; selectOx(!oxActive); }
 });
-listen(window, 'blur', () => { showCojito(false); target(false); selectOx(false); });
+listen(window, 'blur', () => { showAlbum(false); target(false); selectOx(false); });
 function sizeField() {
   field.style.left = stackedLayout.matches ? '0px' : `${Math.min(innerWidth, Math.max(0, index.getBoundingClientRect().right))}px`;
   resizeRenderer();
@@ -289,6 +288,7 @@ async function preparePiece() {
 }
 function cleanup() {
   if (disposed) return;
+  eyeRain.dispose();
   cojito.pause();
   disposed = true; lifetime.abort(); observer.disconnect();
   cancelAnimationFrame(frameId); frameId = 0;
@@ -297,7 +297,7 @@ function cleanup() {
   renderer?.domElement.remove();
 }
 listen(document, 'visibilitychange', () => {
-  if (document.hidden) { showCojito(false); target(false); selectOx(false); cancelAnimationFrame(frameId); frameId = 0; lastTime = 0; }
+  if (document.hidden) { showAlbum(false); target(false); selectOx(false); cancelAnimationFrame(frameId); frameId = 0; lastTime = 0; }
   else wake();
 });
 listen(window, 'pagehide', event => {
