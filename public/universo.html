@@ -168,7 +168,9 @@
     .pieza-campo[data-foto="true"] canvas { visibility: hidden; }
     .pieza-campo:not([data-foto="true"]) .foto-inicial { visibility: hidden; }
     .pieza-campo canvas { display: block; pointer-events: none; }
-    .lluvia-ojos { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .lluvia-ojos { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    .lluvia-ojos[hidden] { display: none; }
+    .tema-blanco .indice { z-index: 2; background: #fff; }
     .pieza-campo[data-album="true"] { visibility: visible; }
     .pieza-campo[data-album="true"] canvas:not(.lluvia-ojos) { visibility: hidden; }
     .pieza-campo canvas.lluvia-ojos[hidden] { display: none; }
