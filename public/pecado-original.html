@@ -215,6 +215,16 @@
     .album-canciones { list-style: decimal-leading-zero; margin: 0; padding-left: 28px; font-size: 13px; line-height: 2.2; letter-spacing: .04em; }
     .album-indice { margin: auto; text-align: left; }
     .album-volver { display: inline-block; margin-top: 24px; color: inherit; font-size: 11px; letter-spacing: .06em; }
+    .album-layout { position: absolute; inset: 8% 12% 12%; display: flex; flex-direction: column; gap: 32px; }
+    .album-encabezado { flex: none; text-align: center; }
+    .album-encabezado h1 { position: static; font-size: 24px; line-height: 1.2; letter-spacing: .06em; text-indent: 0; overflow-wrap: normal; }
+    .album-encabezado p { margin: 10px 0 0; font-size: 13px; letter-spacing: .08em; }
+    .album-layout .indice-contenido { position: static; flex: 1; min-height: 0; }
+    .album-layout .album-indice { margin: 0 auto; }
+    @media (max-width: 760px) {
+      .album-layout { inset: 22px 22px 18px; gap: 26px; }
+      .album-encabezado h1 { font-size: 20px; }
+    }
   </style>
 
 </head>
@@ -222,11 +232,14 @@
   <main class="universo">
     <section class="indice" aria-labelledby="indice-titulo">
       <picture><source media="(max-width: 760px)" srcset="./marco_universo_movil.svg" width="600" height="600"><img class="indice-marco" src="./marco_universo.svg" width="600" height="900" alt=""></picture>
-      <h1 id="indice-titulo">JORECAMILO</h1>
+      <div class="album-layout">
+        <header class="album-encabezado">
+          <h1 id="indice-titulo">EL PECADO ORIGINAL (2026)</h1>
+          <p>JoreCamilo</p>
+        </header>
       <div class="indice-contenido"><div class="album-indice">
-        <h2 class="album-nombre">El pecado original (2026)</h2>
         <ol class="album-canciones">
-          <li><button type="button" class="cancion-trigger" data-cancion="madravilla">MADRAVILLA</button></li>
+          <li><button type="button" class="cancion-trigger" data-cancion="madravilla">Madravilla</button></li>
           <li></li>
           <li></li>
           <li></li>
@@ -244,6 +257,7 @@
         </ol>
         <a class="album-volver" href="./universo.html">Volver al universo</a>
       </div></div>
+      </div>
     </section>
   </main>
   <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
