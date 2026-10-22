@@ -3,7 +3,7 @@ export function createAudioTest(field) {
   const emptyMessage = local ? 'Audio de prueba no cargado' : 'Audio no disponible';
   const panel = document.createElement('section');
   panel.className = 'audio-prueba'; panel.hidden = true; panel.setAttribute('aria-label', 'Reproductor de Madravilla');
-  panel.innerHTML = `<p class="audio-titulo">Madravilla — JoreCamilo</p>
+  panel.innerHTML = `<p class="audio-titulo">Madravilla</p>
     <p class="audio-creditos"><a href="https://www.instagram.com/jorecamilo/" target="_blank" rel="noopener noreferrer">JoreCamilo</a> <span>∞</span> <a href="https://www.instagram.com/magdalenamorenales/" target="_blank" rel="noopener noreferrer">Magdalena</a></p>
     <p class="audio-estado" role="status">${emptyMessage}</p>
     <div class="audio-controles"><button type="button" class="audio-play" disabled aria-label="Reproducir">PLAY</button>
