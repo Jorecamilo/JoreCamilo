@@ -209,6 +209,12 @@
       #oximoron-trigger { min-height: 32px; }
       .indice .piezas-hijos { margin-top: 0; }
     }
+    .ox-editorial { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: min(420px, calc(100% - 40px)); padding: 12px 0 24px; text-align: center; color: var(--marfil-jore, #E0D7C1); font-size: 12px; line-height: 1.6; }
+    .ox-editorial[hidden] { display: none; }
+    .ox-editorial h2 { font-size: 14px; font-weight: normal; letter-spacing: .22em; margin: 0 0 12px; }
+    .ox-editorial p { margin: 8px 0; }
+    .ox-editorial .ox-equivalencia { font-size: 14px; letter-spacing: .12em; margin-top: 14px; }
+    @media (max-width: 760px) { .pieza-campo[data-ox="true"] { height: calc(clamp(260px, 44svh, 380px) + 230px); } }
   </style>
   <script type="importmap">
     {"imports":{
@@ -277,7 +283,7 @@
       </div>
     </section>
   </main>
-  <div class="pieza-campo" id="pieza-campo" data-foto="true" aria-hidden="true"><img class="foto-inicial" src="./imagenes/maicena.webp" width="1057" height="1600" alt=""><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
+  <div class="pieza-campo" id="pieza-campo" data-foto="true" aria-hidden="true"><img class="foto-inicial" src="./imagenes/maicena.webp" width="1057" height="1600" alt=""><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video><section class="ox-editorial" hidden aria-label="Acerca de Oxímoron"><h2>OXÍMORON</h2><p>Una pieza coleccionable donde los opuestos se encuentran sin anularse.</p><p>Su posesión abre el acceso a experiencias y obras del universo JoreCamilo.</p><p class="ox-equivalencia">1 OX = 1 ⊗</p></section></div>
   <script type="module" src="./universo-pieza.js"></script>
 </body>
 </html>

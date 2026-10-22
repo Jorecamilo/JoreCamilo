@@ -51,6 +51,11 @@ let radius = 1, renderFrames = 0, lastDebug = 0;
 const smooth = value => value * value * (3 - 2 * value);
 
 function updatePhoto() {
+  const oxChanged = field.dataset.ox !== String(oxActive);
+  field.dataset.ox = String(oxActive);
+  field.querySelector('.ox-editorial').hidden = !oxActive;
+  if (oxActive) field.setAttribute('aria-hidden', 'false');
+  if (oxChanged) resizeRenderer();
   field.dataset.foto = String(!active && !oxActive && !albumVisual && progress === 0 && !transition);
 }
 function showAlbum(show, restart = false) {
@@ -278,7 +283,7 @@ async function preparePiece() {
     oxViewer = createOximoron(THREE, renderer, () => wake(), lifetime.signal);
     if (oxActive) oxViewer.setActive(true);
     resizeRenderer = () => {
-      const width = Math.max(1, field.clientWidth), height = Math.max(1, field.clientHeight);
+      const width = Math.max(1, field.clientWidth), height = Math.max(1, field.clientHeight - (oxActive ? field.querySelector('.ox-editorial').offsetHeight : 0));
       renderer.setSize(width, height); camera.aspect = width / height;
       const halfAngle = Math.min(THREE.MathUtils.degToRad(21), Math.atan(Math.tan(THREE.MathUtils.degToRad(21)) * camera.aspect));
       camera.position.set(.12, .04, 1).normalize().multiplyScalar(radius / Math.sin(halfAngle) * 1.25);

@@ -1,16 +1,17 @@
 export function createAudioTest(field) {
   const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
-  const emptyMessage = local ? 'Audio de prueba no cargado' : 'Audio próximamente';
+  const emptyMessage = local ? 'Audio de prueba no cargado' : 'Audio no disponible';
   const panel = document.createElement('section');
   panel.className = 'audio-prueba'; panel.hidden = true; panel.setAttribute('aria-label', 'Reproductor de Madravilla');
   panel.innerHTML = `<p class="audio-titulo">Madravilla — JoreCamilo</p>
+    <p class="audio-creditos"><a href="https://www.instagram.com/jorecamilo/" target="_blank" rel="noopener noreferrer">JoreCamilo</a> <span>∞</span> <a href="https://www.instagram.com/magdalenamorenales/" target="_blank" rel="noopener noreferrer">Magdalena</a></p>
     <p class="audio-estado" role="status">${emptyMessage}</p>
     <div class="audio-controles"><button type="button" class="audio-play" disabled aria-label="Reproducir">PLAY</button>
     <input class="audio-progreso" type="range" min="0" max="100" value="0" step="0.1" disabled aria-label="Posición del audio">
     <span class="audio-tiempo">0:00 / 0:00</span></div>
     ${local ? `<button type="button" class="audio-cargar">CARGAR AUDIO DE PRUEBA</button>
     <input class="audio-archivo" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" hidden>` : ''}
-    <ul class="audio-plataformas"><li>TIDAL — Próximamente</li><li>Spotify — Próximamente</li><li>YouTube — Próximamente</li><li>Bandcamp — Próximamente</li></ul>`;
+    <p class="audio-plataformas">COMPRAR EN BANDCAMP</p>`;
   field.appendChild(panel);
   const audio = document.createElement('audio'); audio.preload = 'metadata'; panel.appendChild(audio);
   const file = panel.querySelector('.audio-archivo'), play = panel.querySelector('.audio-play');
