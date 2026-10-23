@@ -176,12 +176,29 @@
     .audio-creditos { margin: 0 0 14px; }
     .audio-creditos a { color: inherit; text-decoration: none; }
     .audio-creditos a:hover { text-decoration: underline; }
+    .audio-estado:empty { display: none; }
     .audio-estado { overflow-wrap: anywhere; margin: 0 0 10px; }
-    .audio-controles { display: flex; align-items: center; gap: 10px; }
+    .audio-controles { display: grid; grid-template-columns: repeat(5, 36px); justify-content: center; align-items: center; gap: 12px; }
     .audio-prueba button { font: inherit; color: inherit; background: transparent; border: 1px solid #000; padding: 6px 8px; cursor: pointer; }
     .audio-prueba button:disabled { opacity: .4; cursor: default; }
     .audio-prueba .audio-controles button { border: 0; border-radius: 0; background: none; box-shadow: none; color: #777; font-size: 18px; min-width: 36px; min-height: 44px; padding: 0; }
-    .audio-progreso { accent-color: #000; min-width: 0; flex: 1; }
+    .audio-opciones { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 4px; }
+    .audio-volumen { position: relative; display: flex; align-items: center; color: #777; }
+    .audio-prueba .audio-volumen button { border: 0; background: none; padding: 0; min-height: 36px; min-width: 26px; color: #777; }
+    .audio-silencio svg { display: block; margin: auto; }
+    .audio-volumen-popup { position: absolute; bottom: calc(100% + 30px); left: 0; padding: 10px 8px; background: #fff; z-index: 3; }
+    .audio-volumen-popup[hidden] { display: none; }
+    .audio-volumen-popup input { writing-mode: vertical-lr; direction: rtl; width: 18px; height: 90px; accent-color: #777; }
+    .audio-volumen-aviso { display: block; width: 100px; font-size: 10px; }
+    .audio-volumen-aviso[hidden] { display: none; }
+    .audio-prueba .audio-repetir[aria-pressed="true"], .audio-prueba .audio-aleatorio[aria-pressed="true"] { color: #111; text-decoration: underline; text-underline-offset: 4px; }
+    .audio-calidad { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 0; font-size: 10px; color: #777; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .audio-calidad select { font: inherit; color: inherit; background: transparent; border: 0; max-width: 140px; }
+    .audio-linea { display: grid; grid-template-columns: 5ch minmax(0, 1fr) 5ch; align-items: center; gap: 10px; }
+    .audio-duracion { text-align: right; }
+    .audio-progreso { appearance: none; height: 2px; min-width: 0; flex: 1; margin: 10px 0; background: linear-gradient(to right, #777 var(--avance, 0%), #ddd var(--avance, 0%)); cursor: pointer; }
+    .audio-progreso::-webkit-slider-thumb { appearance: none; width: 6px; height: 6px; border-radius: 50%; background: #777; }
+    .audio-progreso::-moz-range-thumb { width: 6px; height: 6px; border: 0; border-radius: 50%; background: #777; }
     .audio-tiempo { white-space: nowrap; font-variant-numeric: tabular-nums; }
     .audio-cargar { margin-top: 12px; }
     .audio-plataformas { list-style: none; padding: 0; margin: 12px 0 0; font-size: 10px; }
@@ -227,6 +244,11 @@
       .album-layout { inset: 22px 22px 18px; gap: 26px; }
       .album-encabezado h1 { font-size: 20px; }
     }
+    .cancion-vistas { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 18px; pointer-events: auto; }
+    .cancion-vistas[hidden], .cancion-letra[hidden] { display: none; }
+    .cancion-vistas button { color: #777; font: inherit; font-size: 11px; background: none; border: 0; padding: 6px 0; cursor: pointer; }
+    .cancion-vistas button[aria-pressed="true"] { color: #111; text-decoration: underline; text-underline-offset: 4px; }
+    .cancion-letra { position: absolute; inset: 56px 10% 230px; overflow-y: auto; white-space: pre-wrap; text-align: center; font-size: 14px; line-height: 1.8; color: #000; pointer-events: auto; }
   </style>
 
 </head>
