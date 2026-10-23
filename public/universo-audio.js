@@ -6,7 +6,8 @@ export function createAudioTest(field) {
   panel.innerHTML = `<p class="audio-titulo">Madravilla</p>
     <p class="audio-creditos"><a href="https://www.instagram.com/jorecamilo/" target="_blank" rel="noopener noreferrer">JoreCamilo</a> <span>∞</span> <a href="https://www.instagram.com/magdalenamorenales/" target="_blank" rel="noopener noreferrer">Magdalena</a></p>
     <p class="audio-estado" role="status">${emptyMessage}</p>
-    <div class="audio-controles"><button type="button" class="audio-play" disabled aria-label="Reproducir">PLAY</button>
+    <div class="audio-controles"><button type="button" class="audio-play" disabled aria-label="Reproducir">▶</button>
+    <button type="button" class="audio-inicio" disabled aria-label="Volver al inicio">|◀</button>
     <input class="audio-progreso" type="range" min="0" max="100" value="0" step="0.1" disabled aria-label="Posición del audio">
     <span class="audio-tiempo">0:00 / 0:00</span></div>
     ${local ? `<button type="button" class="audio-cargar">CARGAR AUDIO DE PRUEBA</button>
@@ -16,15 +17,15 @@ export function createAudioTest(field) {
   const audio = document.createElement('audio'); audio.preload = 'metadata'; panel.appendChild(audio);
   const file = panel.querySelector('.audio-archivo'), play = panel.querySelector('.audio-play');
   const seek = panel.querySelector('.audio-progreso'), status = panel.querySelector('.audio-estado');
-  const time = panel.querySelector('.audio-tiempo');
+  const time = panel.querySelector('.audio-tiempo'), restart = panel.querySelector('.audio-inicio');
   let url = null, generation = 0;
   const format = s => Number.isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : '0:00';
   function update() {
     const valid = Number.isFinite(audio.duration) && audio.duration > 0;
-    play.disabled = !url || !valid; seek.disabled = play.disabled;
+    play.disabled = !url || !valid; seek.disabled = play.disabled; restart.disabled = play.disabled;
     seek.max = valid ? audio.duration : 100; seek.value = audio.currentTime || 0;
     time.textContent = `${format(audio.currentTime)} / ${format(audio.duration)}`;
-    play.textContent = audio.paused ? 'PLAY' : 'PAUSA';
+    play.textContent = audio.paused ? '▶' : 'Ⅱ';
     play.setAttribute('aria-label', audio.paused ? 'Reproducir' : 'Pausar');
   }
   function clear() {
@@ -47,6 +48,7 @@ export function createAudioTest(field) {
       if (current === generation && error.name !== 'AbortError') status.textContent = 'No se pudo reproducir el archivo';
     }
   });
+  restart.addEventListener('click', () => { audio.currentTime = 0; update(); });
   seek.addEventListener('input', () => { if (Number.isFinite(audio.duration)) audio.currentTime = Number(seek.value); update(); });
   for (const event of ['loadedmetadata', 'durationchange', 'timeupdate', 'play', 'pause', 'ended', 'emptied']) audio.addEventListener(event, update);
   audio.addEventListener('error', () => { if (url) { clear(); status.textContent = 'Formato de audio no compatible'; } });

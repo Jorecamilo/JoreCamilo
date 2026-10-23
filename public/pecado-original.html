@@ -180,6 +180,7 @@
     .audio-controles { display: flex; align-items: center; gap: 10px; }
     .audio-prueba button { font: inherit; color: inherit; background: transparent; border: 1px solid #000; padding: 6px 8px; cursor: pointer; }
     .audio-prueba button:disabled { opacity: .4; cursor: default; }
+    .audio-prueba .audio-controles button { border: 0; border-radius: 0; background: none; box-shadow: none; color: #777; font-size: 18px; min-width: 36px; min-height: 44px; padding: 0; }
     .audio-progreso { accent-color: #000; min-width: 0; flex: 1; }
     .audio-tiempo { white-space: nowrap; font-variant-numeric: tabular-nums; }
     .audio-cargar { margin-top: 12px; }
@@ -218,7 +219,8 @@
     .album-layout { position: absolute; inset: 8% 12% 12%; display: flex; flex-direction: column; gap: 32px; }
     .album-encabezado { flex: none; text-align: center; }
     .album-encabezado h1 { position: static; font-size: 24px; line-height: 1.2; letter-spacing: .06em; text-indent: 0; overflow-wrap: normal; }
-    .album-encabezado p { margin: 10px 0 0; font-size: 13px; letter-spacing: .08em; }
+    .album-encabezado p { margin: 10px 0 0; font-size: 15px; letter-spacing: .08em; }
+    .album-encabezado .album-ano { font-size: 11px; margin-top: 7px; }
     .album-layout .indice-contenido { position: static; flex: 1; min-height: 0; }
     .album-layout .album-indice { margin: 0 auto; }
     @media (max-width: 760px) {
@@ -234,8 +236,9 @@
       <picture><source media="(max-width: 760px)" srcset="./marco_universo_movil.svg" width="600" height="600"><img class="indice-marco" src="./marco_universo.svg" width="600" height="900" alt=""></picture>
       <div class="album-layout">
         <header class="album-encabezado">
-          <h1 id="indice-titulo">EL PECADO ORIGINAL (2026)</h1>
+          <h1 id="indice-titulo">EL PECADO ORIGINAL</h1>
           <p>JoreCamilo</p>
+          <p class="album-ano">2026</p>
         </header>
       <div class="indice-contenido"><div class="album-indice">
         <ol class="album-canciones">
