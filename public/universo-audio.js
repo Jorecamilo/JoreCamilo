@@ -146,12 +146,46 @@ export function createAudioTest(field, { tracks = [], onTrackChange = () => {} }
     }
     clear(); status.textContent = 'No se pudo cargar el audio. Vuelve a seleccionar la calidad para reintentar.';
   });
-  const pauseHidden = () => { if (document.hidden) audio.pause(); };
-  document.addEventListener('visibilitychange', pauseHidden);
+  // Visibility and focus changes must never pause the listener's music.
+  const session = navigator.mediaSession;
+  let sessionActive = false;
+  function syncSession() {
+    if (!sessionActive) return;
+    session.playbackState = pending ? (pending.resume ? 'playing' : 'paused') : (audio.paused ? 'paused' : 'playing');
+    if (Number.isFinite(audio.duration) && audio.duration > 0) {
+      try { session.setPositionState?.({ duration: audio.duration, playbackRate: audio.playbackRate, position: Math.min(audio.duration, Math.max(0, audio.currentTime)) }); } catch {}
+    }
+  }
+  function setSessionAction(action, handler) {
+    try { session.setActionHandler(action, handler); } catch { /* Unsupported system action. */ }
+  }
+  function activateSession() {
+    if (!session) return;
+    sessionActive = true;
+    if (typeof MediaMetadata !== 'undefined') session.metadata = new MediaMetadata({ title: 'Madravilla', artist: 'JoreCamilo ∞ Magdalena', album: 'El pecado original (2026)' });
+    setSessionAction('play', async () => {
+      if (pending) { pending.resume = true; syncSession(); return; }
+      if (panel.hidden || !url) return;
+      const token = generation;
+      try { await audio.play(); } catch (error) {
+        if (token === generation && error.name !== 'AbortError') status.textContent = 'Pulsa reproducir para continuar';
+      }
+    });
+    setSessionAction('pause', () => { if (pending) pending.resume = false; audio.pause(); syncSession(); });
+    syncSession();
+  }
+  function releaseSession() {
+    if (!sessionActive) return;
+    sessionActive = false;
+    setSessionAction('play', null); setSessionAction('pause', null);
+    session.playbackState = 'none'; session.metadata = null;
+    try { session.setPositionState?.(); } catch {}
+  }
+  for (const event of ['play', 'pause', 'ended', 'loadedmetadata', 'timeupdate', 'ratechange', 'seeked']) audio.addEventListener(event, syncSession);
   return {
     get isOpen() { return !panel.hidden; },
-    show() { if (!url) loadQuality(); panel.hidden = false; field.dataset.audioTest = 'true'; field.setAttribute('aria-hidden', 'false'); },
-    hide() { openVolume(false); clear(); panel.hidden = true; delete field.dataset.audioTest; field.setAttribute('aria-hidden', 'true'); },
-    dispose() { this.hide(); document.removeEventListener('visibilitychange', pauseHidden); document.removeEventListener('keydown', keyboard); document.removeEventListener('pointerdown', outsideVolume); document.removeEventListener('keydown', escapeVolume); panel.remove(); }
+    show() { if (!url) loadQuality(); panel.hidden = false; activateSession(); field.dataset.audioTest = 'true'; field.setAttribute('aria-hidden', 'false'); },
+    hide() { releaseSession(); openVolume(false); clear(); panel.hidden = true; delete field.dataset.audioTest; field.setAttribute('aria-hidden', 'true'); },
+    dispose() { this.hide(); document.removeEventListener('keydown', keyboard); document.removeEventListener('pointerdown', outsideVolume); document.removeEventListener('keydown', escapeVolume); panel.remove(); }
   };
 }
