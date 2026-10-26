@@ -1,11 +1,11 @@
-import { createEyeRain } from './universo-ojos.js';
+import { createWhiteEye } from './ojo-blanco.js';
 import { createSongVisual } from './cancion-visual.js';
 import { createAudioTest } from './universo-audio.js';
 const field = document.getElementById('pieza-campo');
 const index = document.querySelector('.indice');
 const video = document.getElementById('cojito-album');
 const songVisual = createSongVisual(field, video);
-const rain = createEyeRain(field);
+const eye = createWhiteEye(document.getElementById('ojo-blanco'));
 const player = createAudioTest(field);
 let selected = null;
 function size() {
@@ -17,7 +17,7 @@ for (const button of document.querySelectorAll('.cancion-trigger')) {
   button.addEventListener('click', () => {
     selected = button.dataset.cancion;
     field.dataset.cancion = selected;
-    rain.hide(); player.hide(); songVisual.hide(); video.pause(); video.hidden = true;
+    eye.hide(); player.hide(); songVisual.hide(); video.pause(); video.hidden = true;
     const white = selected !== 'el-monte-la-flor';
     document.documentElement.classList.toggle('tema-blanco', white);
     for (const item of document.querySelectorAll('.cancion-trigger')) item.setAttribute('aria-pressed', String(item === button));
@@ -27,11 +27,11 @@ for (const button of document.querySelectorAll('.cancion-trigger')) {
     }
   });
 }
-requestAnimationFrame(() => { document.documentElement.classList.add('tema-blanco'); rain.show(true); });
-window.addEventListener('pagehide', () => { rain.hide(); player.hide(); songVisual.hide(); video.pause(); });
+requestAnimationFrame(() => { document.documentElement.classList.add('tema-blanco'); eye.show(); });
+window.addEventListener('pagehide', () => { eye.hide(); player.hide(); songVisual.hide(); video.pause(); });
 window.addEventListener('pageshow', event => {
   if (event.persisted) {
     if (selected) document.querySelector(`[data-cancion="${selected}"]`).click();
-    else rain.show(true);
+    else eye.show();
   }
 });

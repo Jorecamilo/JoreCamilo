@@ -13,16 +13,17 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=oximoron-1">
   <style>
     :root {
-      --blanco-jore: #e0d7c1;
+      --blanco-jore: #ffffff;
       --negro-jore: #000000;
+      color-scheme: dark;
     }
 
-    :root.tema-blanco { --negro-jore: #ffffff; --blanco-jore: #000000; }
+    :root.tema-blanco { --negro-jore: #000000; --blanco-jore: #ffffff; }
     html, body, .pieza-campo { transition: background-color .8s ease, color .8s ease; }
     .indice-marco, .cojito-album { filter: brightness(1); transition: filter .8s ease; }
-    .tema-blanco .indice-marco { filter: brightness(0); }
+    .tema-blanco .indice-marco { filter: brightness(1); }
     .cojito-album { filter: invert(0); }
-    .tema-blanco .cojito-album { filter: invert(1); }
+    .tema-blanco .cojito-album { filter: invert(0); }
     .cancion-trigger { border: 0; padding: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: left; cursor: pointer; }
     .cancion-trigger:focus-visible { outline: 1px dotted currentColor; outline-offset: 3px; }
     html,
@@ -169,7 +170,7 @@
     .pieza-campo:not([data-foto="true"]) .foto-inicial { visibility: hidden; }
     .pieza-campo canvas { display: block; pointer-events: none; }
     .pieza-campo[data-audio-test="true"] .cojito-album { height: calc(100% - 210px); }
-    .audio-prueba { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); width: min(380px, calc(100% - 40px)); color: #000; pointer-events: auto; font-size: 11px; letter-spacing: .04em; }
+    .audio-prueba { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); width: min(380px, calc(100% - 40px)); color: #fff; pointer-events: auto; font-size: 11px; letter-spacing: .04em; }
     .audio-prueba[hidden] { display: none; }
     .audio-titulo { font-size: 13px; margin: 0 0 8px; }
     .audio-titulo, .audio-creditos, .audio-plataformas { text-align: center; }
@@ -179,33 +180,33 @@
     .audio-estado:empty { display: none; }
     .audio-estado { overflow-wrap: anywhere; margin: 0 0 10px; }
     .audio-controles { display: grid; grid-template-columns: repeat(5, 36px); justify-content: center; align-items: center; gap: 12px; }
-    .audio-prueba button { font: inherit; color: inherit; background: transparent; border: 1px solid #000; padding: 6px 8px; cursor: pointer; }
+    .audio-prueba button { font: inherit; color: inherit; background: transparent; border: 1px solid #fff; padding: 6px 8px; cursor: pointer; }
     .audio-prueba button:disabled { opacity: .4; cursor: default; }
-    .audio-prueba .audio-controles button { border: 0; border-radius: 0; background: none; box-shadow: none; color: #777; font-size: 18px; min-width: 36px; min-height: 44px; padding: 0; }
+    .audio-prueba .audio-controles button { border: 0; border-radius: 0; background: none; box-shadow: none; color: #fff; font-size: 18px; min-width: 36px; min-height: 44px; padding: 0; }
     .audio-opciones { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 4px; }
-    .audio-volumen { position: relative; display: flex; align-items: center; color: #777; }
-    .audio-prueba .audio-volumen button { border: 0; background: none; padding: 0; min-height: 36px; min-width: 26px; color: #777; }
+    .audio-volumen { position: relative; display: flex; align-items: center; color: #fff; }
+    .audio-prueba .audio-volumen button { border: 0; background: none; padding: 0; min-height: 36px; min-width: 26px; color: #fff; }
     .audio-silencio svg { display: block; margin: auto; }
-    .audio-volumen-popup { position: absolute; bottom: calc(100% + 30px); left: 0; padding: 10px 8px; background: #fff; z-index: 3; }
+    .audio-volumen-popup { position: absolute; bottom: calc(100% + 30px); left: 0; padding: 10px 8px; background: #000; z-index: 3; }
     .audio-volumen-popup[hidden] { display: none; }
-    .audio-volumen-popup input { writing-mode: vertical-lr; direction: rtl; width: 18px; height: 90px; accent-color: #777; }
+    .audio-volumen-popup input { writing-mode: vertical-lr; direction: rtl; width: 18px; height: 90px; accent-color: #fff; }
     .audio-volumen-aviso { display: block; width: 100px; font-size: 10px; }
     .audio-volumen-aviso[hidden] { display: none; }
-    .audio-prueba .audio-repetir[aria-pressed="true"], .audio-prueba .audio-aleatorio[aria-pressed="true"] { color: #111; text-decoration: underline; text-underline-offset: 4px; }
-    .audio-calidad { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 0; font-size: 10px; color: #777; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .audio-prueba .audio-repetir[aria-pressed="true"], .audio-prueba .audio-aleatorio[aria-pressed="true"] { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+    .audio-calidad { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 0; font-size: 10px; color: #fff; flex-direction: column; align-items: flex-end; gap: 2px; }
     .audio-calidad select { font: inherit; color: inherit; background: transparent; border: 0; max-width: 140px; }
     .audio-linea { display: grid; grid-template-columns: 5ch minmax(0, 1fr) 5ch; align-items: center; gap: 10px; }
     .audio-duracion { text-align: right; }
-    .audio-progreso { appearance: none; height: 2px; min-width: 0; flex: 1; margin: 10px 0; background: linear-gradient(to right, #777 var(--avance, 0%), #ddd var(--avance, 0%)); cursor: pointer; }
-    .audio-progreso::-webkit-slider-thumb { appearance: none; width: 6px; height: 6px; border-radius: 50%; background: #777; }
-    .audio-progreso::-moz-range-thumb { width: 6px; height: 6px; border: 0; border-radius: 50%; background: #777; }
+    .audio-progreso { appearance: none; height: 2px; min-width: 0; flex: 1; margin: 10px 0; background: linear-gradient(to right, #fff var(--avance, 0%), #555 var(--avance, 0%)); cursor: pointer; }
+    .audio-progreso::-webkit-slider-thumb { appearance: none; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+    .audio-progreso::-moz-range-thumb { width: 6px; height: 6px; border: 0; border-radius: 50%; background: #fff; }
     .audio-tiempo { white-space: nowrap; font-variant-numeric: tabular-nums; }
     .audio-cargar { margin-top: 12px; }
     .audio-plataformas { list-style: none; padding: 0; margin: 12px 0 0; font-size: 10px; }
     @media (max-width: 760px) { .pieza-campo[data-audio-test="true"] { height: 500px; } }
     .lluvia-ojos { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
     .lluvia-ojos[hidden] { display: none; }
-    .tema-blanco .indice { z-index: 2; background: #fff; }
+    .tema-blanco .indice { z-index: 2; background: #000; }
     .pieza-campo[data-album="true"] { visibility: visible; }
     .pieza-campo[data-album="true"] canvas:not(.lluvia-ojos) { visibility: hidden; }
     .pieza-campo canvas.lluvia-ojos[hidden] { display: none; }
@@ -230,14 +231,14 @@
       .indice .piezas-hijos { margin-top: 0; }
     }
       .album-nombre { margin: 0 0 22px; font-size: 13px; font-weight: normal; letter-spacing: .08em; }
-    .album-canciones { list-style: decimal-leading-zero; margin: 0; padding-left: 28px; font-size: 13px; line-height: 2.2; letter-spacing: .04em; }
+    .album-canciones { list-style: decimal; margin: 0; padding-left: 28px; font-size: 13px; line-height: 2.2; letter-spacing: .04em; }
     .album-indice { margin: auto; text-align: left; }
     .album-volver { display: inline-block; margin-top: 24px; color: inherit; font-size: 11px; letter-spacing: .06em; }
     .album-layout { position: absolute; inset: 8% 12% 12%; display: flex; flex-direction: column; gap: 32px; }
     .album-encabezado { flex: none; text-align: center; }
     .album-encabezado h1 { position: static; font-size: 24px; line-height: 1.2; letter-spacing: .06em; text-indent: 0; overflow-wrap: normal; }
     .album-encabezado p { margin: 10px 0 0; font-size: 15px; letter-spacing: .08em; }
-    .album-encabezado .album-ano { font-size: 11px; margin-top: 7px; }
+    .album-encabezado .album-ano { font-size: 10px; margin-top: 7px; color: #888888; }
     .album-layout .indice-contenido { position: static; flex: 1; min-height: 0; }
     .album-layout .album-indice { margin: 0 auto; }
     @media (max-width: 760px) {
@@ -246,9 +247,12 @@
     }
     .cancion-vistas { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 18px; pointer-events: auto; }
     .cancion-vistas[hidden], .cancion-letra[hidden] { display: none; }
-    .cancion-vistas button { color: #777; font: inherit; font-size: 11px; background: none; border: 0; padding: 6px 0; cursor: pointer; }
-    .cancion-vistas button[aria-pressed="true"] { color: #111; text-decoration: underline; text-underline-offset: 4px; }
-    .cancion-letra { position: absolute; inset: 56px 10% 230px; overflow-y: auto; white-space: pre-wrap; text-align: center; font-size: 14px; line-height: 1.8; color: #000; pointer-events: auto; }
+    .cancion-vistas button { color: #fff; font: inherit; font-size: 11px; background: none; border: 0; padding: 6px 0; cursor: pointer; }
+    .cancion-vistas button[aria-pressed="true"] { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+    .cancion-letra { position: absolute; inset: 56px 10% 230px; overflow-y: auto; white-space: pre-wrap; text-align: center; font-size: 14px; line-height: 1.8; color: #fff; pointer-events: auto; }
+    .ojo-blanco { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; pointer-events: none; }
+    .ojo-blanco[hidden], .ojo-blanco [hidden] { display: none; }
+    .ojo-blanco video, .ojo-blanco img { width: 100%; height: 100%; object-fit: contain; display: block; }
   </style>
 
 </head>
@@ -260,7 +264,7 @@
         <header class="album-encabezado">
           <h1 id="indice-titulo">EL PECADO ORIGINAL</h1>
           <p>JoreCamilo</p>
-          <p class="album-ano">2026</p>
+          <p class="album-ano">( 2026 )</p>
         </header>
       <div class="indice-contenido"><div class="album-indice">
         <ol class="album-canciones">
@@ -285,7 +289,7 @@
       </div>
     </section>
   </main>
-  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
+  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><div class="ojo-blanco" id="ojo-blanco" role="img" aria-label="Ojo Blanco: una gota luminosa se transforma en un ojo blanco"><video muted playsinline preload="none" aria-hidden="true"><source src="./visuales/ojo-blanco.webm" type="video/webm"><source src="./visuales/ojo-blanco.mp4" type="video/mp4"></video><img src="./visuales/ojo-blanco-final.png" alt="" hidden></div><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
   <script type="module" src="./pecado-original.js"></script>
 </body>
 </html>
