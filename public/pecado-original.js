@@ -4,34 +4,32 @@ import { createAudioTest } from './universo-audio.js';
 const field = document.getElementById('pieza-campo');
 const index = document.querySelector('.indice');
 const video = document.getElementById('cojito-album');
+const artist = document.getElementById('artista-vista');
 const songVisual = createSongVisual(field, video);
 const eye = createWhiteEye(document.getElementById('ojo-blanco'));
 const player = createAudioTest(field);
-let selected = null;
+let selected = 'album';
 function size() {
   field.style.left = matchMedia('(max-width: 760px)').matches ? '0px' : `${index.getBoundingClientRect().right}px`;
 }
 const observer = new ResizeObserver(size); observer.observe(index);
 window.addEventListener('resize', size); size();
-for (const button of document.querySelectorAll('.cancion-trigger')) {
-  button.addEventListener('click', () => {
-    selected = button.dataset.cancion;
-    field.dataset.cancion = selected;
-    eye.hide(); player.hide(); songVisual.hide(); video.pause(); video.hidden = true;
-    const white = selected !== 'el-monte-la-flor';
-    document.documentElement.classList.toggle('tema-blanco', white);
-    for (const item of document.querySelectorAll('.cancion-trigger')) item.setAttribute('aria-pressed', String(item === button));
-    if (selected === 'madravilla') {
-      video.hidden = false; video.muted = true; player.show(); songVisual.show();
-      video.play().catch(error => { if (error.name !== 'AbortError') console.warn('COJITO_PLAY', error.message); });
-    }
-  });
-}
-requestAnimationFrame(() => { document.documentElement.classList.add('tema-blanco'); eye.show(); });
-window.addEventListener('pagehide', () => { eye.hide(); player.hide(); songVisual.hide(); video.pause(); });
-window.addEventListener('pageshow', event => {
-  if (event.persisted) {
-    if (selected) document.querySelector(`[data-cancion="${selected}"]`).click();
-    else eye.show();
+function showView(view) {
+  selected = view;
+  field.dataset.cancion = view;
+  eye.hide(); songVisual.hide(); video.pause(); video.hidden = true; artist.hidden = true;
+  field.setAttribute('aria-hidden', 'false');
+  for (const item of document.querySelectorAll('.cancion-trigger')) item.setAttribute('aria-pressed', String(item.dataset.cancion === view));
+  if (view === 'album') eye.show();
+  else if (view === 'artista') artist.hidden = false;
+  else if (view === 'madravilla') {
+    video.hidden = false; video.muted = true; player.show(); songVisual.show();
+    video.play().catch(error => { if (error.name !== 'AbortError') console.warn('COJITO_PLAY', error.message); });
   }
-});
+}
+for (const button of document.querySelectorAll('.cancion-trigger')) button.addEventListener('click', () => showView(button.dataset.cancion));
+document.getElementById('album-vista-trigger').addEventListener('click', () => showView('album'));
+document.getElementById('artista-vista-trigger').addEventListener('click', () => showView('artista'));
+requestAnimationFrame(() => { document.documentElement.classList.add('tema-blanco'); showView('album'); });
+window.addEventListener('pagehide', () => { eye.hide(); player.hide(); songVisual.hide(); video.pause(); });
+window.addEventListener('pageshow', event => { if (event.persisted) showView(selected); });
