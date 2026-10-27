@@ -35,6 +35,6 @@ export function createAlbumParts(container) {
       for (const panel of panels) panel.expand(panel.id === id && open);
     });
     heading.append(button); inner.append(list); panel.append(inner); section.append(heading, panel); container.append(section);
-    expand(id === 'claridad');
+    expand(false);
   }
 }
