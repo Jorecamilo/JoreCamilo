@@ -233,7 +233,7 @@
       .album-nombre { margin: 0 0 22px; font-size: 13px; font-weight: normal; letter-spacing: .08em; }
     .album-canciones { list-style: decimal; margin: 0; padding-left: 28px; font-size: 13px; line-height: 2.2; letter-spacing: .04em; }
     .album-indice { margin: auto; text-align: left; }
-    .album-volver { display: inline-block; margin-top: 24px; color: inherit; font-size: 11px; letter-spacing: .06em; }
+    .album-volver { display: block; flex: none; align-self: center; margin: 0; color: #888888; font-size: 11px; letter-spacing: .06em; }
     .album-layout { position: absolute; inset: 8% 12% 12%; display: flex; flex-direction: column; gap: 32px; }
     .album-encabezado { flex: none; text-align: center; }
     .album-encabezado h1 { position: static; font-size: 24px; line-height: 1.2; letter-spacing: .06em; text-indent: 0; overflow-wrap: normal; }
@@ -260,6 +260,27 @@
     .artista-vista img { display: block; width: min(80%, 420px); max-height: calc(100% - 48px); object-fit: contain; min-height: 0; }
     .artista-biografia { width: min(100%, 420px); min-height: 48px; flex: none; text-align: center; }
     .pieza-campo[data-audio-test="true"] .artista-vista { bottom: 210px; height: auto; }
+    .album-layout .album-indice { width: 100%; }
+    .album-parte { margin-bottom: 10px; }
+    .album-parte h2 { margin: 0; font: inherit; }
+    .parte-trigger { display: block; width: 100%; min-height: 40px; padding: 9px 10px; box-sizing: border-box; border: 0; background: transparent; color: #fff; border-radius: 0; font: inherit; font-size: 13px; line-height: 1.4; letter-spacing: .06em; text-align: center; cursor: pointer; }
+    .parte-trigger:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+    .pieza-campo { isolation: isolate; }
+    .pieza-campo::before { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+    .pieza-campo::before { background: #000; transition: background-color .8s ease; }
+    .pieza-campo[data-parte="claridad"]::before { background: #fff; }
+    .pieza-campo[data-audio-test="true"]::before { bottom: 210px; }
+    @media (prefers-reduced-motion: reduce) { .pieza-campo::before { transition: none; } }
+    .parte-panel { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .25s ease, visibility .25s; }
+    .album-parte.abierta .parte-panel { grid-template-rows: 1fr; visibility: visible; }
+    .parte-interior { min-height: 0; overflow: hidden; }
+    .parte-canciones { list-style: none; margin: 0; padding: 0 14px; font-size: 13px; line-height: 2.2; letter-spacing: .04em; }
+    .parte-canciones .cancion-trigger { min-height: 36px; }
+    @media (prefers-reduced-motion: reduce) { .parte-panel { transition: none; } }
+    .ojos-apilados { position: absolute; inset: 0; overflow: hidden; background: #000; }
+    .ojos-apilados[hidden] { display: none; }
+    .ojos-apilados .lluvia-ojos { position: absolute; }
+    .pieza-campo[data-audio-test="true"] .ojos-apilados { bottom: 210px; }
   </style>
 
 </head>
@@ -274,29 +295,14 @@
           <p class="album-ano">( 2026 )</p>
         </header>
       <div class="indice-contenido"><div class="album-indice">
-        <ol class="album-canciones">
-          <li><button type="button" class="cancion-trigger" data-cancion="madravilla">Madravilla</button></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-        </ol>
-        <a class="album-volver" href="./universo.html">Volver al universo</a>
+        <div id="album-partes" aria-label="Partes del álbum"></div>
+
       </div></div>
+        <a class="album-volver" href="./">Volver al inicio</a>
       </div>
     </section>
   </main>
-  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><div class="ojo-blanco" id="ojo-blanco" role="img" aria-label="Ojo Blanco: una gota luminosa se transforma en un ojo blanco"><video muted playsinline preload="none" aria-hidden="true"><source src="./visuales/ojo-blanco.webm" type="video/webm"><source src="./visuales/ojo-blanco.mp4" type="video/mp4"></video><img src="./visuales/ojo-blanco-final.png" alt="" hidden></div><section id="artista-vista" class="artista-vista" aria-label="JoreCamilo" hidden><img src="./imagenes/jorecamilo-ojos-cerrados.jpg" alt="Retrato de JoreCamilo con los ojos cerrados" width="616" height="616"><div class="artista-biografia"><!-- Biografía pendiente de texto del artista. --></div></section><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
+  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><div class="ojo-blanco" id="ojo-blanco" role="img" aria-label="Ojo Blanco: una gota luminosa se transforma en un ojo blanco"><video muted playsinline preload="none" aria-hidden="true"><source src="./visuales/ojo-blanco.webm" type="video/webm"><source src="./visuales/ojo-blanco.mp4" type="video/mp4"></video><img src="./visuales/ojo-blanco-final.png" alt="" hidden></div><section id="artista-vista" class="artista-vista" aria-label="JoreCamilo" hidden><img src="./imagenes/jorecamilo-ojos-cerrados.jpg" alt="Retrato de JoreCamilo con los ojos cerrados" width="616" height="616"><div class="artista-biografia"><!-- Biografía pendiente de texto del artista. --></div></section><div id="ojos-apilados" class="ojos-apilados" hidden></div><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
   <script type="module" src="./pecado-original.js"></script>
 </body>
 </html>
