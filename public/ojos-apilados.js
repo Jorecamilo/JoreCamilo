@@ -4,12 +4,13 @@ export function createEyeRain(field) {
   canvas.className = 'lluvia-ojos'; canvas.hidden = true; canvas.setAttribute('aria-hidden', 'true');
   field.appendChild(canvas);
   const ctx = canvas.getContext('2d');
-  let particles = [], raf = 0, start = 0, width = 0, height = 0, shown = false, finished = false;
+  let particles = [], raf = 0, start = 0, width = 0, height = 0, pixelRatio = 0, shown = false, finished = false;
   let frames = 0, totalWork = 0;
   const random = (a, b) => a + Math.random() * (b - a);
   function layout() {
-    width = field.clientWidth; height = field.clientHeight;
-    const ratio = Math.min(devicePixelRatio, 1.5);
+    const bounds = field.getBoundingClientRect();
+    width = Math.max(1, bounds.width); height = Math.max(1, bounds.height);
+    const ratio = pixelRatio = Math.min(devicePixelRatio, 1.5);
     canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
     const radius = width < 761 ? 20 : 25;
     const columns = Math.ceil(width / (radius * 1.65));
@@ -75,9 +76,12 @@ export function createEyeRain(field) {
     if (!finished) raf = requestAnimationFrame(frame);
   }
   function resize() {
-    if (width === field.clientWidth && height === field.clientHeight) return;
+    const bounds = field.getBoundingClientRect();
+    if (!shown || bounds.width <= 0 || bounds.height <= 0) return;
+    if (width === bounds.width && height === bounds.height && pixelRatio === Math.min(devicePixelRatio, 1.5)) return;
     layout(); if (shown) draw(finished ? 4 : Math.min(4,(performance.now()-start)/1000));
   }
+  window.addEventListener('resize', resize);
   const observer = new ResizeObserver(() => { if (shown) resize(); }); observer.observe(field);
   return {
     show(restart = false) {
@@ -90,6 +94,6 @@ export function createEyeRain(field) {
       else if (!raf) raf = requestAnimationFrame(frame);
     },
     hide() { shown = false; canvas.hidden = true; cancelAnimationFrame(raf); raf = 0; },
-    dispose() { this.hide(); observer.disconnect(); canvas.remove(); }
+    dispose() { this.hide(); observer.disconnect(); window.removeEventListener('resize', resize); canvas.remove(); }
   };
 }

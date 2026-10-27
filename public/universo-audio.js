@@ -185,6 +185,7 @@ export function createAudioTest(field, { tracks = [], onTrackChange = () => {} }
   return {
     get isOpen() { return !panel.hidden; },
     show() { if (!url) loadQuality(); panel.hidden = false; activateSession(); field.dataset.audioTest = 'true'; field.setAttribute('aria-hidden', 'false'); },
+    conceal() { openVolume(false); panel.hidden = true; delete field.dataset.audioTest; } ,
     hide() { releaseSession(); openVolume(false); clear(); panel.hidden = true; delete field.dataset.audioTest; field.setAttribute('aria-hidden', 'true'); },
     dispose() { this.hide(); document.removeEventListener('keydown', keyboard); document.removeEventListener('pointerdown', outsideVolume); document.removeEventListener('keydown', escapeVolume); panel.remove(); }
   };

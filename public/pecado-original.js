@@ -12,6 +12,7 @@ const songVisual = createSongVisual(field, video);
 const eye = createWhiteEye(document.getElementById('ojo-blanco'));
 const player = createAudioTest(field);
 const rainField = document.getElementById('ojos-apilados');
+document.body.appendChild(rainField);
 const rain = createEyeRain(rainField);
 let selected = 'album';
 function size() {
@@ -21,6 +22,9 @@ const observer = new ResizeObserver(size); observer.observe(index);
 window.addEventListener('resize', size); size();
 function showView(view) {
   selected = view;
+  document.documentElement.classList.toggle('vista-brillo', view === 'parte:brillo');
+  document.documentElement.classList.toggle('tema-blanco', view === 'parte:claridad' || view === 'madravilla');
+  if (view !== 'madravilla') player.conceal();
   field.dataset.cancion = view;
   field.dataset.parte = view.startsWith('parte:') ? view.slice(6) : '';
   rain.hide(); rainField.hidden = true; eye.hide(); songVisual.hide(); video.pause(); video.hidden = true; artist.hidden = true;
@@ -29,8 +33,9 @@ function showView(view) {
   if (view === 'parte:brillo') { rainField.hidden = false; rain.show(true); }
   else if (view === 'album') eye.show();
   else if (view === 'artista') artist.hidden = false;
-  else if (view === 'madravilla') {
-    video.hidden = false; video.muted = true; player.show(); songVisual.show();
+  else if (['parte:oscuridad', 'parte:claridad', 'madravilla'].includes(view)) {
+    video.hidden = false; video.muted = true;
+    if (view === 'madravilla') { player.show(); songVisual.show(); }
     video.play().catch(error => { if (error.name !== 'AbortError') console.warn('COJITO_PLAY', error.message); });
   }
 }
@@ -38,6 +43,6 @@ for (const button of document.querySelectorAll('.cancion-trigger')) button.addEv
 for (const id of ['oscuridad', 'claridad', 'brillo']) document.getElementById('parte-' + id).addEventListener('click', () => showView('parte:' + id));
 document.getElementById('album-vista-trigger').addEventListener('click', () => showView('album'));
 document.getElementById('artista-vista-trigger').addEventListener('click', () => showView('artista'));
-requestAnimationFrame(() => { document.documentElement.classList.add('tema-blanco'); showView('album'); });
+requestAnimationFrame(() => showView('album'));
 window.addEventListener('pagehide', () => { rain.hide(); eye.hide(); player.hide(); songVisual.hide(); video.pause(); });
 window.addEventListener('pageshow', event => { if (event.persisted) showView(selected); });
