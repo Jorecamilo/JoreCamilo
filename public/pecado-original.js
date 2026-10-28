@@ -10,7 +10,7 @@ const video = document.getElementById('cojito-album');
 const artist = document.getElementById('artista-vista');
 const songVisual = createSongVisual(field, video);
 const eye = createWhiteEye(document.getElementById('ojo-blanco'));
-const player = createAudioTest(field);
+const player = createAudioTest(field, { miniContainer: document.querySelector('.album-footer') });
 const rainField = document.getElementById('ojos-apilados');
 document.body.appendChild(rainField);
 const rain = createEyeRain(rainField);

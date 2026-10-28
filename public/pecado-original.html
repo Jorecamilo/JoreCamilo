@@ -288,6 +288,15 @@
     .vista-brillo .album-layout button { text-shadow: inherit; }
     .vista-brillo .indice-marco { filter: drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000) drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000); }
     .vista-brillo .proteccion-texto, .vista-brillo .album-volver { background: rgba(0, 0, 0, .9); box-shadow: 0 0 4px 2px rgba(0, 0, 0, .9); box-decoration-break: clone; }
+      .album-footer { flex: none; text-align: center; }
+    .audio-mini { width: min(100%, 270px); margin: 0 auto 12px; color: var(--blanco-jore); font-size: 11px; letter-spacing: .03em; text-align: left; }
+    .audio-mini[hidden] { display: none; }
+    .mini-heading, .mini-controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .mini-heading small { display: block; font-size: 10px; opacity: .7; margin-top: 2px; }
+    .mini-quality { font-size: 9px; }
+    .mini-controls button { color: inherit; background: none; border: 0; padding: 0; width: 36px; min-height: 36px; cursor: pointer; }
+    .mini-controls input { flex: 1; min-width: 0; height: 3px; accent-color: var(--blanco-jore); cursor: pointer; }
+    .vista-brillo .audio-mini { background: #000; }
   </style>
 
 </head>
@@ -305,11 +314,11 @@
         <div id="album-partes" aria-label="Partes del álbum"></div>
 
       </div></div>
-        <a class="album-volver" href="https://jorecamilo.com/universo">Volver al inicio</a>
+        <div class="album-footer"><a class="album-volver" href="https://jorecamilo.com/universo">Volver al inicio</a></div>
       </div>
     </section>
   </main>
-  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><div class="ojo-blanco" id="ojo-blanco" role="img" aria-label="Ojo Blanco: una gota luminosa se transforma en un ojo blanco"><video muted playsinline preload="none" aria-hidden="true"><source src="./visuales/ojo-blanco.webm" type="video/webm"><source src="./visuales/ojo-blanco.mp4" type="video/mp4"></video><img src="./visuales/ojo-blanco-final.png" alt="" hidden></div><section id="artista-vista" class="artista-vista" aria-label="JoreCamilo" hidden><img src="./imagenes/jorecamilo-ojos-cerrados.jpg" alt="Retrato de JoreCamilo con los ojos cerrados" width="616" height="616"><div class="artista-biografia"><!-- Biografía pendiente de texto del artista. --></div></section><div id="ojos-apilados" class="ojos-apilados" hidden></div><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
+  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><div class="ojo-blanco" id="ojo-blanco" role="img" aria-label="Ojo Blanco: una gota luminosa se transforma en un ojo blanco"><video muted playsinline preload="none" aria-hidden="true"><source src="./visuales/ojo-blanco.webm" type="video/webm"><source src="./visuales/ojo-blanco.mp4" type="video/mp4"></video><img src="./visuales/ojo-blanco-final.png" alt="" hidden></div><section id="artista-vista" class="artista-vista" aria-label="JoreCamilo" hidden><img src="./imagenes/jorecamilo-morro.jpg" alt="Retrato de JoreCamilo" width="1125" height="1394"><div class="artista-biografia"><!-- Biografía pendiente de texto del artista. --></div></section><div id="ojos-apilados" class="ojos-apilados" hidden></div><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
   <script type="module" src="./pecado-original.js"></script>
 </body>
 </html>

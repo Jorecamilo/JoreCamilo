@@ -1,4 +1,4 @@
-export function createAudioTest(field, { tracks = [], onTrackChange = () => {} } = {}) {
+export function createAudioTest(field, { tracks = [], onTrackChange = () => {}, miniContainer = null } = {}) {
   const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
   let trackIndex = 0;
   const emptyMessage = local ? 'Selecciona reproducir para escuchar' : 'Audio no disponible';
@@ -26,15 +26,31 @@ export function createAudioTest(field, { tracks = [], onTrackChange = () => {} }
   const shuffle = panel.querySelector('.audio-aleatorio');
   let shuffled = false, history = [];
   const supportsFlac = !!audio.canPlayType('audio/flac');
-  const connection = navigator.connection;
-  const reliableFastConnection = connection && !connection.saveData && connection.effectiveType === '4g' && connection.downlink >= 10;
-  quality.value = supportsFlac && reliableFastConnection ? 'flac' : 'mp3';
+  let preference = null;
+  try { preference = localStorage.getItem('jorecamilo-audio-quality'); } catch {}
+  quality.value = supportsFlac && preference !== 'mp3' ? 'flac' : 'mp3';
   quality.querySelector('[value="flac"]').disabled = !supportsFlac;
   const compatibilityMessage = supportsFlac ? '' : 'Este navegador utiliza MP3; FLAC no es compatible.';
   let url = null, generation = 0, pending = null, sourceEvents = null;
   const playable = () => tracks.filter(track => track.sources?.mp3 || track.sources?.flac);
   const sources = () => playable()[trackIndex]?.sources || { mp3: 'https://audio.jorecamilo.com/el-pecado-original/Madravilla.mp3', flac: 'https://audio.jorecamilo.com/el-pecado-original/Madravilla.flac' };
   const format = s => Number.isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : '0:00';
+  let activated = false, intendedPlaying = false;
+  const mini = miniContainer ? document.createElement('section') : null;
+  if (mini) {
+    mini.className = 'audio-mini'; mini.hidden = true; mini.setAttribute('aria-label', 'Minirreproductor de Madravilla');
+    mini.innerHTML = '<div class="mini-heading"><span>7. Madravilla<small>JoreCamilo</small></span><span class="mini-quality"></span></div><div class="mini-controls"><button type="button" aria-label="Reproducir">▶</button><input type="range" min="0" max="100" step="0.1" value="0" aria-label="Posición de Madravilla"></div>';
+    miniContainer.prepend(mini);
+    mini.querySelector('button').addEventListener('click', () => play.click());
+    mini.querySelector('input').addEventListener('input', event => { if (Number.isFinite(audio.duration)) audio.currentTime = Number(event.target.value); update(); });
+  }
+  function fallback(resume = intendedPlaying) {
+    if (quality.value !== 'flac') return false;
+    const position = pending?.position ?? audio.currentTime;
+    resume = pending?.resume ?? resume;
+    quality.value = 'mp3'; loadQuality(position, resume);
+    return true;
+  }
   function update() {
     const valid = Number.isFinite(audio.duration) && audio.duration > 0;
     play.disabled = !url || !valid || !!pending; seek.disabled = play.disabled;
@@ -45,17 +61,26 @@ export function createAudioTest(field, { tracks = [], onTrackChange = () => {} }
     seek.max = valid ? audio.duration : 100; seek.value = audio.currentTime || 0;
     time.textContent = format(audio.currentTime); duration.textContent = format(audio.duration);
     seek.style.setProperty('--avance', `${valid ? 100 * audio.currentTime / audio.duration : 0}%`);
+    if (mini) {
+      mini.hidden = !activated || !panel.hidden || !url;
+      mini.querySelector('.mini-quality').textContent = quality.value.toUpperCase();
+      const button = mini.querySelector('button'), slider = mini.querySelector('input');
+      button.disabled = play.disabled; button.textContent = audio.paused ? '▶' : 'Ⅱ';
+      button.setAttribute('aria-label', audio.paused ? 'Reproducir' : 'Pausar');
+      slider.disabled = seek.disabled; slider.max = seek.max; slider.value = seek.value;
+    }
     play.textContent = audio.paused ? '▶' : 'Ⅱ';
     play.setAttribute('aria-label', audio.paused ? 'Reproducir' : 'Pausar');
   }
   function clear() {
-    generation++; sourceEvents?.abort(); sourceEvents = null; pending = null; audio.pause(); audio.removeAttribute('src'); audio.load();
+    activated = false; intendedPlaying = false; generation++; sourceEvents?.abort(); sourceEvents = null; pending = null; audio.pause(); audio.removeAttribute('src'); audio.load();
     url = null;
     status.textContent = emptyMessage; update();
   }
   function loadQuality(position = 0, resume = false) {
     const source = sources()[quality.value];
     if (!source) { status.textContent = 'Audio no disponible'; return; }
+    intendedPlaying = resume;
     const token = ++generation;
     sourceEvents?.abort(); sourceEvents = new AbortController();
     const state = pending = { position, resume, token };
@@ -67,13 +92,14 @@ export function createAudioTest(field, { tracks = [], onTrackChange = () => {} }
       pending = null; status.textContent = compatibilityMessage; update();
       if (state.resume) {
         try { await audio.play(); } catch (error) {
-          if (token === generation && error.name !== 'AbortError') status.textContent = 'Pulsa reproducir para continuar';
+          if (token === generation && error.name !== 'AbortError') { if (error.name === 'NotAllowedError' || !fallback(true)) status.textContent = 'Pulsa reproducir para continuar'; }
         }
       }
     }, { once: true, signal: sourceEvents.signal });
     audio.src = source; audio.load(); update();
   }
   quality.addEventListener('change', () => {
+    try { localStorage.setItem('jorecamilo-audio-quality', quality.value); } catch {}
     loadQuality(pending?.position ?? audio.currentTime, pending?.resume ?? !audio.paused);
   });
   function moveTrack(direction) {
@@ -124,26 +150,26 @@ export function createAudioTest(field, { tracks = [], onTrackChange = () => {} }
   document.addEventListener('pointerdown', outsideVolume);
   document.addEventListener('keydown', escapeVolume);
   const keyboard = event => {
-    if (panel.hidden || event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+    if ((panel.hidden && (!mini || mini.hidden)) || event.code !== 'Space' || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.target instanceof Element && event.target.closest('input,textarea,select,button,a,summary,[contenteditable]:not([contenteditable="false"]),[role="button"],[role="slider"],[role="tab"]')) return;
     event.preventDefault(); if (!play.disabled) play.click();
   };
   document.addEventListener('keydown', keyboard);
   play.addEventListener('click', async () => {
-    if (!audio.paused) { audio.pause(); return; }
+    if (!audio.paused) { intendedPlaying = false; audio.pause(); return; }
+    intendedPlaying = true;
     const current = generation;
     try { await audio.play(); } catch (error) {
-      if (current === generation && error.name !== 'AbortError') status.textContent = 'No se pudo reproducir el archivo';
+      if (current === generation && error.name !== 'AbortError') { if (error.name === 'NotAllowedError' || !fallback(true)) status.textContent = 'No se pudo reproducir el archivo'; }
     }
   });
   seek.addEventListener('input', () => { if (Number.isFinite(audio.duration)) audio.currentTime = Number(seek.value); update(); });
   for (const event of ['loadedmetadata', 'durationchange', 'timeupdate', 'play', 'pause', 'ended', 'emptied']) audio.addEventListener(event, update);
+  audio.addEventListener('play', () => { activated = true; intendedPlaying = true; update(); });
+  audio.addEventListener('ended', () => { intendedPlaying = false; });
   audio.addEventListener('error', () => {
     if (!url) return;
-    if (quality.value === 'flac' && audio.error?.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED) {
-      const position = pending?.position ?? audio.currentTime, resume = pending?.resume ?? !audio.paused;
-      quality.value = 'mp3'; loadQuality(position, resume); return;
-    }
+    if (fallback()) return;
     clear(); status.textContent = 'No se pudo cargar el audio. Vuelve a seleccionar la calidad para reintentar.';
   });
   // Visibility and focus changes must never pause the listener's music.
@@ -165,13 +191,13 @@ export function createAudioTest(field, { tracks = [], onTrackChange = () => {} }
     if (typeof MediaMetadata !== 'undefined') session.metadata = new MediaMetadata({ title: 'Madravilla', artist: 'JoreCamilo ∞ Magdalena', album: 'El pecado original (2026)' });
     setSessionAction('play', async () => {
       if (pending) { pending.resume = true; syncSession(); return; }
-      if (panel.hidden || !url) return;
+      if (!url) return;
       const token = generation;
       try { await audio.play(); } catch (error) {
         if (token === generation && error.name !== 'AbortError') status.textContent = 'Pulsa reproducir para continuar';
       }
     });
-    setSessionAction('pause', () => { if (pending) pending.resume = false; audio.pause(); syncSession(); });
+    setSessionAction('pause', () => { intendedPlaying = false; if (pending) pending.resume = false; audio.pause(); syncSession(); });
     syncSession();
   }
   function releaseSession() {
@@ -184,9 +210,9 @@ export function createAudioTest(field, { tracks = [], onTrackChange = () => {} }
   for (const event of ['play', 'pause', 'ended', 'loadedmetadata', 'timeupdate', 'ratechange', 'seeked']) audio.addEventListener(event, syncSession);
   return {
     get isOpen() { return !panel.hidden; },
-    show() { if (!url) loadQuality(); panel.hidden = false; activateSession(); field.dataset.audioTest = 'true'; field.setAttribute('aria-hidden', 'false'); },
-    conceal() { openVolume(false); panel.hidden = true; delete field.dataset.audioTest; } ,
+    show() { if (!url) loadQuality(); panel.hidden = false; activateSession(); field.dataset.audioTest = 'true'; field.setAttribute('aria-hidden', 'false'); update(); },
+    conceal() { openVolume(false); panel.hidden = true; delete field.dataset.audioTest; update(); } ,
     hide() { releaseSession(); openVolume(false); clear(); panel.hidden = true; delete field.dataset.audioTest; field.setAttribute('aria-hidden', 'true'); },
-    dispose() { this.hide(); document.removeEventListener('keydown', keyboard); document.removeEventListener('pointerdown', outsideVolume); document.removeEventListener('keydown', escapeVolume); panel.remove(); }
+    dispose() { this.hide(); document.removeEventListener('keydown', keyboard); document.removeEventListener('pointerdown', outsideVolume); document.removeEventListener('keydown', escapeVolume); panel.remove(); mini?.remove(); }
   };
 }
