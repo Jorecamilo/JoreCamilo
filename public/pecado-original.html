@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=oximoron-1">
   <style>
     :root {
-      --blanco-jore: #ffffff;
+      --blanco-jore: #e0d7c1;
       --negro-jore: #000000;
       color-scheme: dark;
     }
@@ -236,7 +236,7 @@
     .album-volver { display: block; flex: none; align-self: center; margin: 0; color: #888888; font-size: 11px; letter-spacing: .06em; }
     .album-layout { position: absolute; inset: 8% 12% 12%; display: flex; flex-direction: column; gap: 32px; }
     .album-encabezado { flex: none; text-align: center; }
-    .album-encabezado h1 { position: static; font-size: 24px; line-height: 1.2; letter-spacing: .06em; text-indent: 0; overflow-wrap: normal; }
+    .album-encabezado h1 { position: static; font-size: 24px; line-height: 1.2; letter-spacing: .28em; text-indent: 0; overflow-wrap: normal; }
     .album-encabezado p { margin: 10px 0 0; font-size: 15px; letter-spacing: .08em; }
     .album-encabezado .album-ano { font-size: 10px; margin-top: 7px; color: #888888; }
     .album-layout .indice-contenido { position: static; flex: 1; min-height: 0; }
@@ -259,7 +259,7 @@
     .artista-vista { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; box-sizing: border-box; overflow-y: auto; pointer-events: auto; }
     .artista-vista[hidden] { display: none; }
     .artista-vista img { display: block; width: auto; height: auto; max-width: min(64%, 336px); max-height: calc(80% - 38.4px); object-fit: contain; flex: none; }
-    .artista-biografia { width: min(100%, 38ch); min-height: 64px; flex: none; color: #fff; font-size: 14px; line-height: 1.7; text-align: left; }
+    .artista-biografia { width: min(100%, 38ch); min-height: 64px; flex: none; color: var(--blanco-jore); font-size: 14px; line-height: 1.7; text-align: left; }
     .pieza-campo[data-audio-test="true"] .artista-vista { bottom: 210px; height: auto; }
     .album-layout .album-indice { width: 100%; }
     .album-parte { margin-bottom: 10px; }
