@@ -252,13 +252,14 @@
     .cancion-letra { position: absolute; inset: 56px 10% 230px; overflow-y: auto; white-space: pre-wrap; text-align: center; font-size: 14px; line-height: 1.8; color: var(--blanco-jore); pointer-events: auto; }
     .ojo-blanco { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; pointer-events: none; }
     .ojo-blanco[hidden], .ojo-blanco [hidden] { display: none; }
-    .ojo-blanco video, .ojo-blanco img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .ojo-blanco video, .ojo-blanco img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+    .ojo-formacion { z-index: 1; }
     .encabezado-vista { appearance: none; border: 0; padding: 0; margin: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: inherit; cursor: pointer; }
     .encabezado-vista:focus-visible { outline: 1px dotted currentColor; outline-offset: 4px; }
-    .artista-vista { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; }
+    .artista-vista { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; box-sizing: border-box; overflow-y: auto; pointer-events: auto; }
     .artista-vista[hidden] { display: none; }
-    .artista-vista img { display: block; width: min(80%, 420px); max-height: calc(100% - 48px); object-fit: contain; min-height: 0; }
-    .artista-biografia { width: min(100%, 420px); min-height: 48px; flex: none; text-align: center; }
+    .artista-vista img { display: block; width: auto; height: auto; max-width: min(64%, 336px); max-height: calc(80% - 38.4px); object-fit: contain; flex: none; }
+    .artista-biografia { width: min(100%, 38ch); min-height: 64px; flex: none; color: #fff; font-size: 14px; line-height: 1.7; text-align: left; }
     .pieza-campo[data-audio-test="true"] .artista-vista { bottom: 210px; height: auto; }
     .album-layout .album-indice { width: 100%; }
     .album-parte { margin-bottom: 10px; }
@@ -318,7 +319,7 @@
       </div>
     </section>
   </main>
-  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><div class="ojo-blanco" id="ojo-blanco" role="img" aria-label="Ojo Blanco: una gota luminosa se transforma en un ojo blanco"><video muted playsinline preload="none" aria-hidden="true"><source src="./visuales/ojo-blanco.webm" type="video/webm"><source src="./visuales/ojo-blanco.mp4" type="video/mp4"></video><img src="./visuales/ojo-blanco-final.png" alt="" hidden></div><section id="artista-vista" class="artista-vista" aria-label="JoreCamilo" hidden><img src="./imagenes/jorecamilo-morro.jpg" alt="Retrato de JoreCamilo" width="1125" height="1394"><div class="artista-biografia"><!-- Biografía pendiente de texto del artista. --></div></section><div id="ojos-apilados" class="ojos-apilados" hidden></div><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
+  <div class="pieza-campo" id="pieza-campo" data-album="true" aria-hidden="true"><div class="ojo-blanco" id="ojo-blanco" role="img" aria-label="Ojo Blanco: una partícula luminosa forma un ojo blanco de partículas en movimiento"><video class="ojo-formacion" muted playsinline preload="metadata" aria-hidden="true"><source src="./visuales/ojo-blanco-formacion.mp4" type="video/mp4"></video><video class="ojo-vivo" muted loop playsinline preload="none" aria-hidden="true" hidden><source src="./visuales/ojo-blanco-vivo-loop.mp4" type="video/mp4"></video><img src="./visuales/ojo-blanco-vivo-poster.png" alt="" hidden></div><section id="artista-vista" class="artista-vista" aria-label="JoreCamilo" hidden><img src="./imagenes/jorecamilo-morro.jpg" alt="Retrato de JoreCamilo" width="1125" height="1394"><div class="artista-biografia"><!-- Biografía pendiente de texto del artista. --></div></section><div id="ojos-apilados" class="ojos-apilados" hidden></div><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video></div>
   <script type="module" src="./pecado-original.js"></script>
 </body>
 </html>
