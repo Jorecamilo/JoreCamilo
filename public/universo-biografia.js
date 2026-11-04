@@ -15,7 +15,7 @@ const explanation=document.createElement('div');
 explanation.id='biografia-nombre';explanation.hidden=true;
 [
   'Un pivijayero común, al pronunciar Jorge Camilo, siente como si tuviera un policía acostado en la lengua. Un policía español acostado en la lengua.',
-  'Por eso, al igual que los pájaros de tierra alta trinan agudo y los pájaros de playa cantan caliente, por allá JoreCamilo se dice de corrido'
+  'Por eso, al igual que los pájaros de tierra alta trinan agudo y los pájaros de playa cantan caliente. Por allá JoreCamilo se dice de corrido.'
 ].forEach(text=>{const paragraph=document.createElement('p');paragraph.textContent=text;paragraph.style.margin='1em 0 0';explanation.append(paragraph);});
 question.addEventListener('click',()=>{const open=question.getAttribute('aria-expanded')!=='true';question.setAttribute('aria-expanded',String(open));explanation.hidden=!open;});
 bio.append(question,explanation);

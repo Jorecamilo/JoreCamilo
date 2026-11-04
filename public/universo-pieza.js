@@ -60,6 +60,7 @@ function updatePhoto() {
   field.dataset.foto = String(!active && !oxActive && !albumVisual && progress === 0 && !transition);
 }
 function showAlbum(show, restart = false) {
+  delete field.dataset.albumPreview; delete field.dataset.cojito;
   audioTest.hide();
   albumVisual = show;
   if (show) { selectOx(false); target(false); progress = 0; transition = null; }
@@ -347,3 +348,20 @@ for(const [value,label] of [['todas','TODAS'],['piezas','PIEZAS'],['especies','E
  button.addEventListener('click',()=>{for(const other of filters.children)other.setAttribute('aria-pressed',String(other===button));for(const li of catalogue.children){const work=obras.find(w=>w.id===li.dataset.obra);li.hidden=value!=='todas'&&!work.categories.includes(value);}});filters.append(button);
 }
 for(const category of categoryTriggers)category.addEventListener('click',()=>{if(albumVisual)showAlbum(false);});
+
+function previewAlbumCojito() {
+ showAlbum(false); selectOx(false); target(false);
+ progress=0; transition=null; albumVisual=true;
+ field.dataset.albumPreview='true';field.dataset.cojito='true';
+ cojito.hidden=false;cojito.muted=true;
+ cojito.play().catch(error=>{if(error.name!=='AbortError')console.warn('COJITO_PREVIEW',error.message);});
+ updatePhoto();field.setAttribute('aria-hidden','false');
+}
+listen(albumTrigger,'pointerenter',event=>{if(event.pointerType==='mouse'&&hoverDevice.matches)previewAlbumCojito();});
+listen(albumTrigger,'pointerleave',event=>{if(event.pointerType==='mouse'&&field.dataset.albumPreview==='true')showAlbum(false);});
+listen(albumTrigger,'click',event=>{
+ if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+ if((!hoverDevice.matches||persistentSelection)&&event.detail!==0&&field.dataset.albumPreview!=='true'){
+  event.preventDefault();previewAlbumCojito();
+ }
+});
