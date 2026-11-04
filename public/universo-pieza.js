@@ -1,3 +1,4 @@
+import { obras } from './obras-datos.js';
 import { createAudioTest } from './universo-audio.js';
 import { createEyeRain } from './universo-ojos.js';
 import { createOximoron } from './universo-oximoron.js';
@@ -326,3 +327,23 @@ function schedulePreparation() {
 }
 if (document.readyState === 'complete') schedulePreparation();
 else listen(window, 'load', schedulePreparation);
+
+listen(window, 'universo:biografia', () => { showAlbum(false); selectOx(false); target(false); persistentSelection = false; });
+
+const catalogue=document.getElementById('obras-catalogo'),filters=document.getElementById('obras-filtros');
+for(const work of obras){
+ if(work.id==='oximoron')continue;
+ const li=document.createElement('li');li.dataset.obra=work.id;
+ const button=document.createElement('button');button.type='button';button.className='obra-control';button.textContent=work.title;
+ button.addEventListener('click',()=>{
+  persistentSelection=true;showAlbum(false);selectOx(false);
+  if(work.id==='arcilla'){target(true);}
+  else if(work.id==='cogito'){target(false);progress=0;transition=null;albumVisual=true;field.dataset.album='true';field.dataset.ojos='false';cojito.hidden=false;cojito.muted=true;cojito.play().catch(()=>{});updatePhoto();}
+ });
+ li.append(button);catalogue.append(li);
+}
+for(const [value,label] of [['todas','TODAS'],['piezas','PIEZAS'],['especies','ESPECIES']]){
+ const button=document.createElement('button');button.type='button';button.textContent=label;button.setAttribute('aria-pressed',String(value==='todas'));
+ button.addEventListener('click',()=>{for(const other of filters.children)other.setAttribute('aria-pressed',String(other===button));for(const li of catalogue.children){const work=obras.find(w=>w.id===li.dataset.obra);li.hidden=value!=='todas'&&!work.categories.includes(value);}});filters.append(button);
+}
+for(const category of categoryTriggers)category.addEventListener('click',()=>{if(albumVisual)showAlbum(false);});

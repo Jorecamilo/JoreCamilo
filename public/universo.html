@@ -215,7 +215,17 @@
     .ox-editorial p { margin: 8px 0; }
     .ox-editorial .ox-equivalencia { font-size: 14px; letter-spacing: .12em; margin-top: 14px; }
     @media (max-width: 760px) { .pieza-campo[data-ox="true"] { height: calc(clamp(260px, 44svh, 380px) + 230px); } }
-  </style>
+      .indice-contenido { bottom: 48px; } #biografia-trigger { border:0; padding:0; background:none; color:inherit; font:inherit; letter-spacing:inherit; cursor:pointer; } #biografia-trigger:focus-visible { outline:1px dotted currentColor; outline-offset:5px; } #obras-filtros{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}#obras-filtros button,.obra-control{border:0;background:none;color:inherit;font:inherit;font-size:11px;letter-spacing:.04em;padding:4px 0;cursor:pointer}#obras-filtros button[aria-pressed="true"]{text-decoration:underline}.territorio-nota{font-size:12px;letter-spacing:.03em;line-height:1.6}.piezas-hijos li[hidden]{display:none}
+.universo-biografia { width:min(100%,48ch); margin:0 auto; font:14px/1.75 Arial,sans-serif; letter-spacing:.02em; color:var(--blanco-jore); }
+.universo-biografia[hidden] { display:none; }
+.pieza-campo[data-biografia="true"] { display:flex; flex-direction:column; align-items:center; justify-content:safe center; gap:24px; padding:32px; box-sizing:border-box; overflow-y:auto; pointer-events:auto; }
+.pieza-campo[data-biografia="true"] .foto-inicial { position:static; inset:auto; margin:0; transform:none; width:auto; height:auto; max-width:min(54%,285px); max-height:45vh; flex:none; visibility:visible; }
+@media(max-width:760px){.pieza-campo[data-biografia="true"]{height:auto;min-height:380px;padding:24px;}.pieza-campo[data-biografia="true"] .foto-inicial{max-height:260px;}.universo-biografia{font-size:13px;}}
+.biografia-pregunta { display:block; margin:18px 0 0; padding:6px 0; border:0; background:none; color:#888888; font:inherit; font-size:11px; line-height:1.5; cursor:pointer; text-align:left; }
+.biografia-pregunta:focus-visible { outline:1px dotted currentColor; outline-offset:4px; }
+#biografia-nombre { font:inherit; color:inherit; }
+#biografia-nombre[hidden] { display:none; }
+</style>
   <script type="importmap">
     {"imports":{
       "three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
@@ -231,7 +241,7 @@
         <source media="(max-width: 760px)" srcset="./marco_universo_movil.svg" width="600" height="600">
         <img class="indice-marco" src="./marco_universo.svg" width="600" height="900" alt="">
       </picture>
-      <h1 id="indice-titulo" data-section="autobiografia">JORECAMILO</h1>
+      <h1 id="indice-titulo" data-section="autobiografia"><button id="biografia-trigger" type="button" aria-expanded="false" aria-controls="universo-biografia">JORECAMILO</button></h1>
       <div class="indice-contenido">
         <ul aria-label="Índice editorial">
           <li>
@@ -244,18 +254,13 @@
               </div>
             </div>
           </li>
+
           <li>
             <div class="piezas-rama">
-              <button class="categoria-trigger" id="obra-trigger" type="button" aria-expanded="false" aria-controls="obra-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>OBRAS</span></button>
-              <div class="piezas-despliegue" id="obra-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"></div></div>
-            </div>
-          </li>
-          <li>
-            <div class="piezas-rama">
-              <button class="categoria-trigger" id="pieza-trigger" type="button" aria-expanded="false" aria-controls="piezas-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>PIEZAS</span></button>
+              <button class="categoria-trigger" id="pieza-trigger" type="button" aria-expanded="false" aria-controls="piezas-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>OBRAS</span></button>
               <div class="piezas-despliegue" id="piezas-listado" aria-hidden="true" inert>
                 <div class="piezas-despliegue-interior">
-                  <ul class="piezas-hijos"><li><button id="oximoron-trigger" type="button" aria-pressed="false">Oxímoron</button></li></ul>
+                  <div id="obras-filtros" aria-label="Filtrar obras"></div><ul class="piezas-hijos" id="obras-catalogo"><li data-obra="oximoron"><button id="oximoron-trigger" type="button" aria-pressed="false">Oxímoron</button></li></ul>
                 </div>
               </div>
             </div>
@@ -266,13 +271,14 @@
               <div class="piezas-despliegue" id="territorio-listado" aria-hidden="true" inert>
                 <div class="piezas-despliegue-interior">
                   <ul class="piezas-hijos">
+                    <li class="piezas-rama"><button class="territorio-sub-trigger" type="button" aria-expanded="false" aria-controls="atlas-listado"><span class="piezas-triangulo">▸</span><span>Atlas de hallazgos</span></button><div class="piezas-despliegue" id="atlas-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"><p class="territorio-nota">Sin hallazgos geolocalizados verificados.</p></div></div></li>
                     <li class="piezas-rama">
-                      <button class="territorio-sub-trigger" id="universo-virtual-trigger" type="button" aria-expanded="false" aria-controls="universo-virtual-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>Universo Virtual</span></button>
-                      <div class="piezas-despliegue" id="universo-virtual-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"><ul class="territorio-entradas"><li>OVR</li></ul></div></div>
+                      <button class="territorio-sub-trigger" id="universo-virtual-trigger" type="button" aria-expanded="false" aria-controls="universo-virtual-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>Universo Virtual — OVER</span></button>
+                      <div class="piezas-despliegue" id="universo-virtual-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"><ul class="territorio-entradas"><li>Experiencia pendiente de enlace verificable.</li></ul></div></div>
                     </li>
                     <li class="piezas-rama">
-                      <button class="territorio-sub-trigger" id="minca-trigger" type="button" aria-expanded="false" aria-controls="minca-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>Minca</span></button>
-                      <div class="piezas-despliegue" id="minca-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"><ul class="territorio-entradas"><li>El Caracol</li><li>Tienda Física</li></ul></div></div>
+                      <button class="territorio-sub-trigger" id="minca-trigger" type="button" aria-expanded="false" aria-controls="minca-listado"><span class="piezas-triangulo" aria-hidden="true">▸</span><span>Minca — El Caracol</span></button>
+                      <div class="piezas-despliegue" id="minca-listado" aria-hidden="true" inert><div class="piezas-despliegue-interior"><ul class="territorio-entradas"><li>El Caracol · Minca, Magdalena, Colombia</li><li>Tienda Física</li></ul></div></div>
                     </li>
                   </ul>
                 </div>
@@ -284,6 +290,6 @@
     </section>
   </main>
   <div class="pieza-campo" id="pieza-campo" data-foto="true" aria-hidden="true"><img class="foto-inicial" src="./imagenes/maicena.webp" width="1057" height="1600" alt=""><video id="cojito-album" class="cojito-album" muted loop playsinline preload="none" hidden><source src="./cojito_web_60fps.webm" type="video/webm"></video><section class="ox-editorial" hidden aria-label="Acerca de Oxímoron"><h2>OXÍMORON</h2><p>Una pieza coleccionable donde los opuestos se encuentran sin anularse.</p><p>Su posesión abre el acceso a experiencias y obras del universo JoreCamilo.</p><p class="ox-equivalencia">1 OX = 1 ⊗</p></section></div>
-  <script type="module" src="./universo-pieza.js"></script>
+  <script type="module" src="./universo-pieza.js"></script><script type="module" src="./universo-biografia.js"></script>
 </body>
 </html>
