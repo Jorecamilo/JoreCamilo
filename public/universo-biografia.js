@@ -23,3 +23,5 @@ field.append(bio);
 function toggle(open){button.setAttribute('aria-expanded',String(open));bio.hidden=!open;field.dataset.biografia=String(open);if(open){window.dispatchEvent(new Event('universo:biografia'));field.setAttribute('aria-hidden','false');}}
 button.addEventListener('click',()=>toggle(button.getAttribute('aria-expanded')!=='true'));
 for(const control of document.querySelectorAll('.categoria-trigger,#oximoron-trigger'))control.addEventListener('click',()=>toggle(false));
+
+button.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse' && window.matchMedia('(hover: hover)').matches)toggle(true);});

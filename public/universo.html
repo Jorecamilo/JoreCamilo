@@ -215,9 +215,12 @@
     .ox-editorial p { margin: 8px 0; }
     .ox-editorial .ox-equivalencia { font-size: 14px; letter-spacing: .12em; margin-top: 14px; }
     @media (max-width: 760px) { .pieza-campo[data-ox="true"] { height: calc(clamp(260px, 44svh, 380px) + 230px); } }
-      .indice-contenido { bottom: 48px; } #biografia-trigger { border:0; padding:0; background:none; color:inherit; font:inherit; letter-spacing:inherit; cursor:pointer; } #biografia-trigger:focus-visible { outline:1px dotted currentColor; outline-offset:5px; } #obras-filtros{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}#obras-filtros button,.obra-control{border:0;background:none;color:inherit;font:inherit;font-size:11px;letter-spacing:.04em;padding:4px 0;cursor:pointer}#obras-filtros button[aria-pressed="true"]{text-decoration:underline}.territorio-nota{font-size:12px;letter-spacing:.03em;line-height:1.6}.piezas-hijos li[hidden]{display:none}
+      .indice-contenido { bottom: calc(var(--titulo-top) + var(--titulo-alto)); } #biografia-trigger { border:0; padding:0; background:none; color:inherit; font:inherit; letter-spacing:inherit; cursor:pointer; } #biografia-trigger:focus-visible { outline:1px dotted currentColor; outline-offset:5px; } #obras-filtros{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}#obras-filtros button,.obra-control{border:0;background:none;color:inherit;font:inherit;font-size:11px;letter-spacing:.04em;padding:4px 0;cursor:pointer}#obras-filtros button[aria-pressed="true"]{text-decoration:underline}.territorio-nota{font-size:12px;letter-spacing:.03em;line-height:1.6}.piezas-hijos li[hidden]{display:none}
 .universo-biografia { width:min(100%,48ch); margin:0 auto; font:14px/1.75 Arial,sans-serif; letter-spacing:.02em; color:var(--blanco-jore); }
 .universo-biografia[hidden] { display:none; }
+.universo-biografia:not([hidden]) { animation: biografia-reveal .35s ease-out; }
+@keyframes biografia-reveal { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+@media(prefers-reduced-motion:reduce) { .universo-biografia:not([hidden]) { animation:none; } }
 .pieza-campo[data-biografia="true"] { display:flex; flex-direction:column; align-items:center; justify-content:safe center; gap:24px; padding:32px; box-sizing:border-box; overflow-y:auto; pointer-events:auto; }
 .pieza-campo[data-biografia="true"] .foto-inicial { position:static; inset:auto; margin:0; transform:none; width:auto; height:auto; max-width:min(54%,285px); max-height:45vh; flex:none; visibility:visible; }
 @media(max-width:760px){.pieza-campo[data-biografia="true"]{height:auto;min-height:380px;padding:24px;}.pieza-campo[data-biografia="true"] .foto-inicial{max-height:260px;}.universo-biografia{font-size:13px;}}
